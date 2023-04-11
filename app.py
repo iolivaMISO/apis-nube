@@ -5,9 +5,10 @@ from vistas import VistaSignup, VistaLogin, VistaFiles, VistaTask, VistaTasks
 from modelos import db
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
+IP=''
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dbapp.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://admin:admin@{IP}:5432/apisnube'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'uniandes-cloud-class-2023'
 app.config['PROPAGATE_EXCEPTIONS'] = True
