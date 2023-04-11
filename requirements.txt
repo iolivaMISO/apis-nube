@@ -16,3 +16,4 @@ pytz==2023.3
 six==1.16.0
 SQLAlchemy==1.4.15
 Werkzeug==2.2.3
+psycopg2-binary
