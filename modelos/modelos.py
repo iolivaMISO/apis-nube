@@ -14,3 +14,21 @@ class Usuario(db.Model):
     email = db.Column(db.String(128))
     tareas = db.relationship('Tarea', cascade='all, delete, delete-orphan')
 
+
+class Tarea(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    file_name = db.Column(db.String(128))
+    file_name_converted = db.Column(db.String(128))
+    time_stamp = db.Column(db.DateTime, default=datetime.utcnow)
+    new_format = db.Column(db.String(128))
+    status = db.Column(db.String(128), default="uploaded")
+    usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+
+
+class TareaSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Tarea
+        include_relationships = True
+        load_instance = True
+        id = fields.String()
+        time_stamp = fields.String()
