@@ -1,8 +1,9 @@
+import hashlib
 import os
 from operator import concat
 from flask import send_file
 from flask_restful import Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from flask import request
 from modelos import db, Usuario, Tarea
 import os
@@ -21,7 +22,17 @@ class VistaSignup(Resource):
 
 class VistaLogin(Resource):
     def post(self):
-        pass
+        username = request.json["username"]
+        password_encriptado = hashlib.md5(
+            request.json["password"].encode('utf-8')).hexdigest()
+        usuario = Usuario.query.filter(
+            Usuario.username == username, Usuario.password == password_encriptado).first()
+        db.session.commit()
+        if usuario is None:
+            return {"mensaje": "cuenta no existe"}, 404
+        else:
+            token_acceso = create_access_token(identity=username)
+            return {"token": token_acceso}, 200
 
 
 class VistaTask(Resource):
