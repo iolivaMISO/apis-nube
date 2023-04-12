@@ -1,12 +1,9 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
-from vistas import VistaSignup, VistaLogin, VistaFiles, VistaTask, VistaTasks
-from modelos import db
+from .vistas import VistaSignup, VistaLogin, VistaFiles, VistaTask, VistaTasks
+from .modelos import db
 from . import create_app
-
-UPLOAD_FOLDER = '/path/to/the/uploads'
-IP='localhost'
 
 app = create_app('default')
 app_context = app.app_context()
@@ -14,7 +11,6 @@ app_context.push()
 
 db.init_app(app)
 db.create_all()
-
 
 api = Api(app)
 

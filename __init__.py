@@ -1,10 +1,8 @@
-from celery import Celery
 from flask import Flask
 
-from app import UPLOAD_FOLDER
+IP = 'localhost'
+UPLOAD_FOLDER = '/path/to/the/uploads'
 
-celery = Celery(__name__, broker='redis://localhost:6379/0')
-IP='localhost'
 
 def create_app(config_name):
     app = Flask(__name__)
