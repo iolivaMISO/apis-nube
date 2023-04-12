@@ -14,3 +14,6 @@ class Usuario(db.Model):
     email = db.Column(db.String(128))
     tareas = db.relationship('Tarea', cascade='all, delete, delete-orphan')
 
+
+class Tarea(db.Model):
+    pass
