@@ -1,5 +1,7 @@
 import os
 from operator import concat
+
+from celery import Celery
 from flask import send_file
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -8,6 +10,14 @@ from modelos import db, Usuario, Tarea, TareaSchema
 import os
 from operator import concat
 from werkzeug.utils import secure_filename
+
+queque = Celery(__name__, broker='redis://localhost:6379')
+
+
+@queque.task(name="queque_envio")
+def enviar_accion(mensaje,archivo):
+    pass
+
 
 ALLOWED_EXTENSIONS = {'ZIP', '7Z', 'TAR.GZ', 'TAR.BZ2'}
 FOLDER_IN = concat(os.getcwd(), '/files/IN')
@@ -42,7 +52,7 @@ class VistaTask(Resource):
 class VistaTasks(Resource):
     @jwt_required()
     def get(self):
-        pass
+        return tarea_schema.dump(Tarea.query.get_or_404(id_task))
 
     @jwt_required()
     def post(self):
@@ -55,7 +65,7 @@ class VistaTasks(Resource):
         if archivo:
             filename = secure_filename(archivo.filename)
             file_name_converted = os.path.splitext(filename)[
-                0]+'.'+new_format
+                                      0] + '.' + new_format
             current_user = Usuario.query.filter(
                 Usuario.username == get_jwt_identity()).first()
             nueva_tarea = Tarea(file_name=filename, file_name_converted=file_name_converted,
@@ -68,6 +78,8 @@ class VistaTasks(Resource):
             root_folder = os.path.dirname(filename)
             os.makedirs(root_folder, exist_ok=True)
             archivo.save(filename)
+            enviar_accion.apply_async(
+            ('cambiar a zip','mobile.pdf'))
         return {"mensaje": "procesado con éxito"}
 
 
@@ -75,10 +87,10 @@ class VistaFiles(Resource):
     @jwt_required()
     def get(self, filename):
         filename = secure_filename(filename)
-        tarea = Tarea.query.filter( Tarea.file_name == filename).first()
+        tarea = Tarea.query.filter(Tarea.file_name == filename).first()
         return send_file(os.path.join(FOLDER_IN, str(tarea.id), filename))
 
 
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].upper() in ALLOWED_EXTENSIONS
+        filename.rsplit('.', 1)[1].upper() in ALLOWED_EXTENSIONS
