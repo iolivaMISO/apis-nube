@@ -86,7 +86,18 @@ class VistaTask(Resource):
 class VistaTasks(Resource):
     @jwt_required()
     def get(self):
-        pass
+        args = request.args
+        query_max = args.get('max') or None
+        query_order = args.get('order') or None
+        if query_max != None and not query_max.isnumeric():
+            return {"mensaje": "max debe ser numerico"}, 400
+        if query_order != None and query_order not in ('0', '1') :
+            return {"mensaje": "order debe ser numerico: 0 o 1"}, 400
+        if (query_order == '1'):
+            tareas = Tarea.query.order_by(Tarea.id.desc()).limit(query_max)
+        else:
+            tareas = Tarea.query.limit(query_max)
+        return [tarea_schema.dump(tarea) for tarea in tareas]
 
     @jwt_required()
     def post(self):
