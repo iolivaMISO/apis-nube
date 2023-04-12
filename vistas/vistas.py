@@ -16,7 +16,7 @@ queque = Celery(__name__, broker='redis://localhost:6379')
 
 
 @queque.task(name="queque_envio")
-def enviar_accion(mensaje,archivo):
+def enviar_accion(id,filename,new_format,file_name_converted):
     pass
 
 
@@ -84,6 +84,7 @@ class VistaTask(Resource):
     @jwt_required()
     def get(self, id_task):
         return tarea_schema.dump(Tarea.query.get_or_404(id_task))
+    
 
     @jwt_required()
     def delete(self, id_task):
@@ -123,7 +124,7 @@ class VistaTasks(Resource):
             os.makedirs(root_folder, exist_ok=True)
             archivo.save(filename)
             enviar_accion.apply_async(
-            ('cambiar a zip','mobile.pdf'))
+            (nueva_tarea.id,filename,new_format,file_name_converted))
         return {"mensaje": "procesado con éxito"}
 
 
