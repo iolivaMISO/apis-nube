@@ -1,3 +1,6 @@
+import os
+from operator import concat
+from flask import send_file
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request
@@ -24,7 +27,7 @@ class VistaLogin(Resource):
 class VistaTask(Resource):
     @jwt_required()
     def get(self, id_task):
-        pass
+        return tarea_schema.dump(Tarea.query.get_or_404(id_task))
 
     @jwt_required()
     def delete(self, id_task):
@@ -69,7 +72,9 @@ class VistaTasks(Resource):
 class VistaFiles(Resource):
     @jwt_required()
     def get(self, filename):
-        pass
+        filename = secure_filename(filename)
+        tarea = Tarea.query.filter( Tarea.file_name == filename).first()
+        return send_file(os.path.join(FOLDER_IN, str(tarea.id), filename))
 
 
 def allowed_file(filename):
