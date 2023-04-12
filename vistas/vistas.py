@@ -4,7 +4,7 @@ from flask import send_file
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request
-from modelos import db, Usuario, Tarea
+from modelos import db, Usuario, Tarea, TareaSchema
 import os
 from operator import concat
 from werkzeug.utils import secure_filename
@@ -12,6 +12,8 @@ from werkzeug.utils import secure_filename
 ALLOWED_EXTENSIONS = {'ZIP', '7Z', 'TAR.GZ', 'TAR.BZ2'}
 FOLDER_IN = concat(os.getcwd(), '/files/IN')
 FOLDER_OUT = '/files/OUT'
+
+tarea_schema = TareaSchema()
 
 
 class VistaSignup(Resource):
