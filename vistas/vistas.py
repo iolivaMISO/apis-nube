@@ -1,10 +1,11 @@
+import hashlib
 import os
 from operator import concat
 
 from celery import Celery
 from flask import send_file
 from flask_restful import Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from flask import request
 from modelos import db, Usuario, Tarea, TareaSchema
 import os
@@ -28,12 +29,55 @@ tarea_schema = TareaSchema()
 
 class VistaSignup(Resource):
     def post(self):
-        pass
+
+        username = request.json["username"]
+        password1 = request.json["password1"]
+        password2 = request.json["password2"]
+        email = request.json["email"]
+        if password1 != password2:
+            return {"mensaje": "la cuenta no pudo ser creada, passwords proporcionados no coinciden."}, 404
+        if len(password1) < 8:
+            return {"mensaje": "la cuenta no pudo ser creada, longitud de password debe ser mayor a 8 caracteres."}, 404
+        usuario = Usuario.query.filter(Usuario.username == username).first()
+        if usuario is not None:
+            return {"mensaje": "la cuenta no pudo ser creada, username ya existe."}, 404
+        usuario = Usuario.query.filter(Usuario.email == email).first()
+        if usuario is not None:
+            return {"mensaje": "la cuenta no pudo ser creada, email ya existe."}, 404
+        password_encriptado = hashlib.md5(
+            request.json["password1"].encode('utf-8')).hexdigest()
+        nuevo_usuario = Usuario(
+            username=username, password=password_encriptado, email=email)
+        db.session.add(nuevo_usuario)
+        db.session.commit()
+        return {"mensaje": "cuenta creada con éxito"}, 200
 
 
 class VistaLogin(Resource):
     def post(self):
-        pass
+        username = request.json.get("username", None)
+        email = request.json.get("email", None)
+        password_encriptado = hashlib.md5(
+            request.json["password"].encode('utf-8')).hexdigest()
+
+        if email is not None:
+            usuario = Usuario.query.filter(
+                Usuario.email == email, Usuario.password == password_encriptado).first()
+            db.session.commit()
+            if usuario is None:
+                return {"mensaje": "cuenta no existe"}, 404
+        elif username is not None:
+            usuario = Usuario.query.filter(
+                Usuario.username == username, Usuario.password == password_encriptado).first()
+            db.session.commit()
+            if usuario is None:
+                return {"mensaje": "cuenta no existe"}, 404
+        else:
+            # Handle the case where email is None
+            return {"mensaje": "correo electrónico no proporcionado"}, 400
+
+        token_acceso = create_access_token(identity=usuario.username)
+        return {"token": token_acceso}, 200
 
 
 class VistaTask(Resource):
