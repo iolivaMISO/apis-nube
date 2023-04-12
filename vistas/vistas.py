@@ -1,3 +1,4 @@
+import hashlib
 import os
 from operator import concat
 from flask import send_file
@@ -19,12 +20,27 @@ tarea_schema = TareaSchema()
 class VistaSignup(Resource):
     def post(self):
 
-        usuario = Usuario(username=request.json["username"],
-                          password=request.json["password1"],
-                          email=request.json["email"])
-        db.session.add(usuario)
+        username = request.json["username"]
+        password1 = request.json["password1"]
+        password2 = request.json["password2"]
+        email = request.json["email"]
+        if password1 != password2:
+            return {"mensaje": "la cuenta no pudo ser creada, passwords proporcionados no coinciden."}, 404
+        if len(password1) < 8:
+            return {"mensaje": "la cuenta no pudo ser creada, longitud de password debe ser mayor a 8 caracteres."}, 404
+        usuario = Usuario.query.filter(Usuario.username == username).first()
+        if usuario is not None:
+            return {"mensaje": "la cuenta no pudo ser creada, username ya existe."}, 404
+        usuario = Usuario.query.filter(Usuario.email == email).first()
+        if usuario is not None:
+            return {"mensaje": "la cuenta no pudo ser creada, email ya existe."}, 404
+        password_encriptado = hashlib.md5(
+            request.json["password1"].encode('utf-8')).hexdigest()
+        nuevo_usuario = Usuario(
+            username=username, password=password_encriptado, email=email)
+        db.session.add(nuevo_usuario)
         db.session.commit()
-        return {"mensaje": "usuario creado perfectamente"}, 200
+        return {"mensaje": "cuenta creada con éxito"}, 200
 
 
 class VistaLogin(Resource):
