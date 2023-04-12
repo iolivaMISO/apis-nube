@@ -16,11 +16,18 @@ FOLDER_OUT = '/files/OUT'
 
 class VistaSignup(Resource):
     def post(self):
-        pass
+
+        usuario = Usuario(username=request.json["username"],
+                          password=request.json["password1"],
+                          email=request.json["email"])
+        db.session.add(usuario)
+        db.session.commit()
+        return {"mensaje": "usuario creado perfectamente"}, 200
 
 
 class VistaLogin(Resource):
     def post(self):
+
         pass
 
 
