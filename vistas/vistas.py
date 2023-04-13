@@ -1,5 +1,8 @@
 import hashlib
 import os
+import tarfile
+import tempfile
+import zipfile
 from operator import concat
 from flask import send_file
 from flask_restful import Resource
@@ -91,7 +94,7 @@ class VistaTasks(Resource):
         query_order = args.get('order') or None
         if query_max != None and not query_max.isnumeric():
             return {"mensaje": "max debe ser numerico"}, 400
-        if query_order != None and query_order not in ('0', '1') :
+        if query_order != None and query_order not in ('0', '1'):
             return {"mensaje": "order debe ser numerico: 0 o 1"}, 400
         if (query_order == '1'):
             tareas = Tarea.query.order_by(Tarea.id.desc()).limit(query_max)
@@ -108,19 +111,26 @@ class VistaTasks(Resource):
         if not allowed_file(archivo.filename):
             return {"mensaje": "file no soportado"}
         if archivo:
+            # convert_file(archivo)
             filename = secure_filename(archivo.filename)
-            file_name_converted = os.path.splitext(filename)[
-                                      0] + '.' + new_format
+            # file_name_converted = os.path.splitext(filename)[
+            #                           0] + '.' + new_format
             current_user = Usuario.query.filter(
                 Usuario.username == get_jwt_identity()).first()
-            nueva_tarea = Tarea(file_name=filename, file_name_converted=file_name_converted,
-                                new_format=new_format, usuario=current_user.id)
+            nueva_tarea = Tarea(file_name=filename,
+                                new_format=new_format, usuario=current_user.id, file_data_name=archivo.read())
             db.session.add(nueva_tarea)
             db.session.commit()
+            tarea = Tarea.query.get_or_404(nueva_tarea.id)
+            with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+                tmp_file.write(tarea.file_data)
+                tmp_file.seek(0)
+            convert_file(tmp_file.name)
             filename = os.path.join(
                 FOLDER_IN, str(nueva_tarea.id), filename)
 
             root_folder = os.path.dirname(filename)
+            print(root_folder)
             os.makedirs(root_folder, exist_ok=True)
             archivo.save(filename)
         return {"mensaje": "procesado con éxito"}
@@ -137,3 +147,18 @@ class VistaFiles(Resource):
 def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].upper() in ALLOWED_EXTENSIONS
+
+
+def convert_file(file):
+
+    # extract the contents of the ZIP file to a temporary directory
+    with zipfile.ZipFile(file, 'r') as zip_ref:
+        tmp_dir = 'tmp'
+        zip_ref.extractall(tmp_dir)
+
+    # create the TAR.GZ file from the temporary directory
+    with tarfile.open('output.tar.gz', 'w:gz') as tar_ref:
+        tar_ref.add(tmp_dir, arcname=os.path.basename(tmp_dir))
+
+    # send the TAR.GZ file as a response
+    return send_file('output.tar.gz', as_attachment=True)

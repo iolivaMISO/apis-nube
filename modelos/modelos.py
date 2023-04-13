@@ -3,6 +3,7 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import fields, Schema
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from sqlalchemy import LargeBinary
 
 db = SQLAlchemy()
 
@@ -19,11 +20,13 @@ class Usuario(db.Model):
 class Tarea(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     file_name = db.Column(db.String(128))
-    file_name_converted = db.Column(db.String(128))
+    file_data_name = db.Column(LargeBinary)
+    file_name_converted = db.Column(LargeBinary)
     time_stamp = db.Column(db.DateTime, default=datetime.utcnow)
     new_format = db.Column(db.String(128))
     status = db.Column(db.String(128), default="uploaded")
     usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+
 
 
 class TareaSchema(SQLAlchemyAutoSchema):
