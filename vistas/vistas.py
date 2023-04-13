@@ -106,6 +106,7 @@ class VistaTasks(Resource):
 
     @jwt_required()
     def post(self):
+
         archivo = request.files['file']
         new_format = request.form["newFormat"]
         if archivo.filename == '':
@@ -123,8 +124,9 @@ class VistaTasks(Resource):
                                 new_format=new_format, usuario=current_user.id, file_data_name=archivo.read())
             db.session.add(nueva_tarea)
             db.session.commit()
-            tmp_file = getFileByIdTask(nueva_tarea.id)
-            convert_file_tar_gz(nueva_tarea.id, tmp_file.name)
+
+            process_to_convert(new_format, nueva_tarea)
+
         return {"mensaje": "procesado con éxito"}
 
 
@@ -133,9 +135,9 @@ class VistaFiles(Resource):
     def get(self, filename):
         filename = secure_filename(filename)
         task = Tarea.query.filter(Tarea.file_name == filename).first()
-        tmp_file = getFileByIdTask2(task.id)
-        filename_new_extension = getFileNameConvertedByTask(task)
-        return download_file(tmp_file, filename_new_extension)
+        filename = get_file_name_converted_by_task(task)
+        response = download_file(task, filename)
+        return response
 
 
 def allowed_file(filename):
@@ -143,68 +145,58 @@ def allowed_file(filename):
         filename.rsplit('.', 1)[1].upper() in ALLOWED_EXTENSIONS
 
 
-def getFileNameConvertedByTask(tarea):
-    filename_new_extension = tarea.file_name.replace(".zip", "")
-    filename_new_extension = filename_new_extension.rsplit('.', 1)[0] + '.' + tarea.new_format
+def process_to_convert(new_format, nueva_tarea):
+    if new_format.upper() == 'TAR.GZ':
+        file = get_file_by_id_task(nueva_tarea.id)
+        convert_file_tar_gz(nueva_tarea.id, file)
+    elif new_format.upper() == '7Z':
+        file = get_file_by_id_task(nueva_tarea.id)
+    elif new_format.upper() == 'TAR.BZ2':
+        file = get_file_by_id_task(nueva_tarea.id)
+
+
+def get_file_name_converted_by_task(task):
+    filename_new_extension = task.file_name.replace(".zip", "")
+    filename_new_extension = filename_new_extension.rsplit('.', 1)[0] + '.' + task.new_format
     filename_new_extension = filename_new_extension.lower()
     return filename_new_extension
 
 
-def getFileByIdTask(id_task):
+def get_file_by_id_task(id_task):
     tarea = Tarea.query.get_or_404(id_task)
-    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
-        tmp_file.write(tarea.file_data_name)
-        tmp_file.seek(0)
-    return tmp_file
+    return io.BytesIO(tarea.file_data_name)
 
 
-def getFileByIdTask2(id_task):
-    tarea = Tarea.query.get_or_404(id_task)
-    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
-        tmp_file.write(tarea.file_data_name)
-        tmp_file.seek(0)
-        file_contents = tmp_file.read()
-    return io.BytesIO(file_contents)
-
-
-def download_file(tmp_file, filename):
-    # return the converted file as an attachment
-    response = make_response(send_file(tmp_file,
-                                       mimetype='application/gzip',
-                                       as_attachment=True,
-                                       download_name=f'{filename.split(".")[0]}.tar.gz'))
-    response.headers['Content-Disposition'] = f'attachment; filename="{filename.split(".")[0]}.tar.gz"'
-
+def download_file(task, file_name):
+    # create a file-like object from the bytes
+    tar_file = io.BytesIO(task.file_name_converted)
+    # create a response object
+    response = make_response(tar_file.getvalue())
+    # set the Content-Disposition header to trigger a file download
+    response.headers.set('Content-Disposition', 'attachment', filename=file_name)
+    # set the MIME type for the response
+    response.headers.set('Content-Type', 'application/x-gzip')
+    # return the response
     return response
-
 
 
 def convert_file_tar_gz(id_task, file):
     tarea = Tarea.query.get_or_404(id_task)
-
     # extract the contents of the ZIP file to a temporary directory
     with zipfile.ZipFile(file, 'r') as zip_ref:
         tmp_dir = 'tmp'
         zip_ref.extractall(tmp_dir)
 
     # create the TAR.GZ file from the temporary directory
-    with tarfile.open('output.tar.gz', 'w:gz') as tar_ref:
-        tar_ref.add(tmp_dir, arcname=os.path.basename(tmp_dir))
+    with io.BytesIO() as tar_buffer:
+        with tarfile.open(fileobj=tar_buffer, mode='w:gz') as tar_ref:
+            tar_ref.add(tmp_dir, arcname='.')
 
-    # read the TAR.GZ file contents into a bytes variable
-    with open('output.tar.gz', 'rb') as output_file:
-        file_contents = output_file.read()
+        # get the bytes of the TAR.GZ file
+        tar_bytes = tar_buffer.getvalue()
 
-    # create a BytesIO object from the file contents
-    file_buffer = io.BytesIO(file_contents)
-
-    # update the tarea object with the file contents
-    tarea.file_name_converted = file_buffer.getvalue()
+    tarea.file_name_converted = tar_bytes
     db.session.commit()
 
-    # remove the temporary directory and TAR.GZ file
+    # delete the temporary directory
     shutil.rmtree(tmp_dir)
-    os.remove('output.tar.gz')
-
-    # send the TAR.GZ file as a response
-    # return send_file('output.tar.gz', as_attachment=True)
