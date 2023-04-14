@@ -63,10 +63,9 @@ def convert_file_tar_gz(id_task, file):
 
 
 def convert_file_tar_bz2(id_task, file):
-    print(id_task)
-    print(file)
+
     tarea = Tarea.query.get_or_404(id_task)
-    print(tarea)
+
     # extract the contents of the ZIP file to a temporary directory
     with zipfile.ZipFile(file, 'r') as zip_ref:
         tmp_dir = 'tmp'

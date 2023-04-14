@@ -5,7 +5,7 @@ from vistas import VistaSignup, VistaLogin, VistaFiles, VistaTask, VistaTasks
 from modelos import db
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
-IP='localhost'
+IP='192.168.0.157'
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://admin:admin@{IP}:5432/apisnube'
@@ -29,3 +29,5 @@ api.add_resource(VistaTasks,  '/api/tasks')
 api.add_resource(VistaFiles, '/api/files/<filename>')
 
 jwt = JWTManager(app)
+if __name__ == '__main__':
+	app.run(host='0.0.0.0', port=8000)
