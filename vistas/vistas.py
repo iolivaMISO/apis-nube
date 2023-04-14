@@ -5,6 +5,7 @@ import shutil
 import tarfile
 import tempfile
 import zipfile
+import py7zr
 from operator import concat
 from flask import send_file, make_response
 from flask_restful import Resource
@@ -114,18 +115,14 @@ class VistaTasks(Resource):
         if not allowed_file(archivo.filename):
             return {"mensaje": "file no soportado"}
         if archivo:
-            # convert_file(archivo)
             filename = secure_filename(archivo.filename)
-            # file_name_converted = os.path.splitext(filename)[
-            #                           0] + '.' + new_format
             current_user = Usuario.query.filter(
                 Usuario.username == get_jwt_identity()).first()
             nueva_tarea = Tarea(file_name=filename,
                                 new_format=new_format, usuario=current_user.id, file_data_name=archivo.read())
             db.session.add(nueva_tarea)
             db.session.commit()
-
-            process_to_convert(new_format, nueva_tarea)
+            process_to_convert(new_format, nueva_tarea.id)
 
         return {"mensaje": "procesado con éxito"}
 
@@ -134,7 +131,9 @@ class VistaFiles(Resource):
     @jwt_required()
     def get(self, filename):
         filename = secure_filename(filename)
-        task = Tarea.query.filter(Tarea.file_name == filename).first()
+        task = Tarea.query.filter(Tarea.file_name == filename).order_by(Tarea.time_stamp.desc()).first()
+        if task is None:
+            return {"mensaje": "filename no existe"}, 404
         filename = get_file_name_converted_by_task(task)
         response = download_file(task, filename)
         return response
@@ -145,14 +144,14 @@ def allowed_file(filename):
         filename.rsplit('.', 1)[1].upper() in ALLOWED_EXTENSIONS
 
 
-def process_to_convert(new_format, nueva_tarea):
+def process_to_convert(new_format, nueva_tarea_id):
+    file = get_file_by_id_task(nueva_tarea_id)
     if new_format.upper() == 'TAR.GZ':
-        file = get_file_by_id_task(nueva_tarea.id)
-        convert_file_tar_gz(nueva_tarea.id, file)
+        convert_file_tar_gz(nueva_tarea_id, file)
     elif new_format.upper() == '7Z':
-        file = get_file_by_id_task(nueva_tarea.id)
+        convert_file_7z(nueva_tarea_id, file)
     elif new_format.upper() == 'TAR.BZ2':
-        file = get_file_by_id_task(nueva_tarea.id)
+        convert_file_tar_bz2(nueva_tarea_id, file)
 
 
 def get_file_name_converted_by_task(task):
@@ -196,6 +195,50 @@ def convert_file_tar_gz(id_task, file):
         tar_bytes = tar_buffer.getvalue()
 
     tarea.file_name_converted = tar_bytes
+    db.session.commit()
+
+    # delete the temporary directory
+    shutil.rmtree(tmp_dir)
+
+
+def convert_file_tar_bz2(id_task, file):
+    tarea = Tarea.query.get_or_404(id_task)
+    # extract the contents of the ZIP file to a temporary directory
+    with zipfile.ZipFile(file, 'r') as zip_ref:
+        tmp_dir = 'tmp'
+        zip_ref.extractall(tmp_dir)
+
+    # create the TAR.BZ2 file from the temporary directory
+    with io.BytesIO() as tar_buffer:
+        with tarfile.open(fileobj=tar_buffer, mode='w:bz2') as tar_ref:
+            tar_ref.add(tmp_dir, arcname='.')
+
+        # get the bytes of the TAR.BZ2 file
+        tar_bytes = tar_buffer.getvalue()
+
+    tarea.file_name_converted = tar_bytes
+    db.session.commit()
+
+    # delete the temporary directory
+    shutil.rmtree(tmp_dir)
+
+
+def convert_file_7z(id_task, file):
+    tarea = Tarea.query.get_or_404(id_task)
+    # extract the contents of the ZIP file to a temporary directory
+    with zipfile.ZipFile(file, 'r') as zip_ref:
+        tmp_dir = 'tmp'
+        zip_ref.extractall(tmp_dir)
+
+    # create the 7Z file from the temporary directory
+    with io.BytesIO() as archive_buffer:
+        with py7zr.SevenZipFile(archive_buffer, 'w') as archive_ref:
+            archive_ref.writeall(tmp_dir)
+
+        # get the bytes of the 7Z file
+        archive_bytes = archive_buffer.getvalue()
+
+    tarea.file_name_converted = archive_bytes
     db.session.commit()
 
     # delete the temporary directory
