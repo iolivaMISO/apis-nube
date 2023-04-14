@@ -1,9 +1,10 @@
 import hashlib
+import io
 import os
 from operator import concat
 
 from celery import Celery
-from flask import send_file
+from flask import send_file, make_response
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from flask import request
@@ -16,7 +17,7 @@ queque = Celery(__name__, broker='redis://localhost:6379')
 
 
 @queque.task(name="queque_envio")
-def enviar_accion(id,filename,new_format,file_name_converted):
+def enviar_accion(id, new_format):
     pass
 
 
@@ -84,7 +85,6 @@ class VistaTask(Resource):
     @jwt_required()
     def get(self, id_task):
         return tarea_schema.dump(Tarea.query.get_or_404(id_task))
-    
 
     @jwt_required()
     def delete(self, id_task):
@@ -102,12 +102,13 @@ class VistaTasks(Resource):
         query_order = args.get('order') or None
         if query_max != None and not query_max.isnumeric():
             return {"mensaje": "max debe ser numerico"}, 400
-        if query_order != None and query_order not in ('0', '1') :
+        if query_order != None and query_order not in ('0', '1'):
             return {"mensaje": "order debe ser numerico: 0 o 1"}, 400
         if (query_order == '1'):
             tareas = Tarea.query.order_by(Tarea.id.desc()).limit(query_max)
         else:
-            tareas = Tarea.query.limit(query_max)
+            tareas = Tarea.query.with_entities(Tarea.id, Tarea.file_name, Tarea.file_name_converted,
+                                               Tarea.time_stamp, Tarea.new_format, Tarea.status).limit(query_max)
         return [tarea_schema.dump(tarea) for tarea in tareas]
 
     @jwt_required()
@@ -124,8 +125,10 @@ class VistaTasks(Resource):
                                       0] + '.' + new_format
             current_user = Usuario.query.filter(
                 Usuario.username == get_jwt_identity()).first()
-            nueva_tarea = Tarea(file_name=filename, file_name_converted=file_name_converted,
-                                new_format=new_format, usuario=current_user.id)
+
+            nueva_tarea = Tarea(file_name=filename.lower(),
+                                new_format=new_format, usuario=current_user.id, file_data_name=archivo.read(),
+                                file_name_converted=file_name_converted.lower())
             db.session.add(nueva_tarea)
             db.session.commit()
             filename = os.path.join(
@@ -134,8 +137,7 @@ class VistaTasks(Resource):
             root_folder = os.path.dirname(filename)
             os.makedirs(root_folder, exist_ok=True)
             archivo.save(filename)
-            enviar_accion.apply_async(
-            (nueva_tarea.id,filename,new_format,file_name_converted))
+            enviar_accion.apply_async((nueva_tarea.id, new_format))
         return {"mensaje": "procesado con éxito"}
 
 
@@ -143,10 +145,39 @@ class VistaFiles(Resource):
     @jwt_required()
     def get(self, filename):
         filename = secure_filename(filename)
-        tarea = Tarea.query.filter(Tarea.file_name == filename).first()
-        return send_file(os.path.join(FOLDER_IN, str(tarea.id), filename))
+        task = Tarea.query.filter(Tarea.file_name == filename.lower()).order_by(Tarea.time_stamp.desc()).first()
+        is_original = True
+        if task is None:
+            task = Tarea.query.filter(Tarea.file_name_converted == filename.lower()).order_by(Tarea.time_stamp.desc()).first()
+            if task is None:
+                return {"mensaje": "filename no existe"}, 404
+            else:
+                is_original = False
+        response = download_file_converted(task, filename, is_original)
+        return response
 
 
 def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].upper() in ALLOWED_EXTENSIONS
+
+
+# def get_file_by_id_task(id_task):
+#     tarea = Tarea.query.get_or_404(id_task)
+#     return io.BytesIO(tarea.file_data_name)
+
+
+def download_file_converted(task, file_name, is_original):
+    if is_original:
+        # create a file-like object from the bytes
+        tar_file = io.BytesIO(task.file_data_name)
+    else:
+        tar_file = io.BytesIO(task.file_data_converted)
+    # create a response object
+    response = make_response(tar_file.getvalue())
+    # set the Content-Disposition header to trigger a file download
+    response.headers.set('Content-Disposition', 'attachment', filename=file_name)
+    # set the MIME type for the response
+    response.headers.set('Content-Type', 'application/x-gzip')
+    # return the response
+    return response
