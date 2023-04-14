@@ -1,6 +1,8 @@
 import hashlib
 import os
 from operator import concat
+
+from celery import Celery
 from flask import send_file
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
@@ -9,6 +11,14 @@ from modelos import db, Usuario, Tarea, TareaSchema
 import os
 from operator import concat
 from werkzeug.utils import secure_filename
+
+queque = Celery(__name__, broker='redis://localhost:6379')
+
+
+@queque.task(name="queque_envio")
+def enviar_accion(id,filename,new_format,file_name_converted):
+    pass
+
 
 ALLOWED_EXTENSIONS = {'ZIP', '7Z', 'TAR.GZ', 'TAR.BZ2'}
 FOLDER_IN = concat(os.getcwd(), '/files/IN')
@@ -74,6 +84,7 @@ class VistaTask(Resource):
     @jwt_required()
     def get(self, id_task):
         return tarea_schema.dump(Tarea.query.get_or_404(id_task))
+    
 
     @jwt_required()
     def delete(self, id_task):
@@ -123,6 +134,8 @@ class VistaTasks(Resource):
             root_folder = os.path.dirname(filename)
             os.makedirs(root_folder, exist_ok=True)
             archivo.save(filename)
+            enviar_accion.apply_async(
+            (nueva_tarea.id,filename,new_format,file_name_converted))
         return {"mensaje": "procesado con éxito"}
 
 
