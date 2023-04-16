@@ -1,11 +1,11 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
-from vistas import VistaSignup, VistaLogin, VistaFiles, VistaTask, VistaTasks
+from vistas import VistaSignup, VistaLogin, VistaFiles, VistaTask, VistaTasks, VistaFile
 from modelos import db
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
-IP='localhost'
+IP = 'localhost'
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://admin:admin@{IP}:5432/apisnube'
@@ -27,6 +27,7 @@ api.add_resource(VistaLogin, '/api/auth/login')
 api.add_resource(VistaTask,  '/api/tasks/<int:id_task>')
 api.add_resource(VistaTasks,  '/api/tasks')
 api.add_resource(VistaFiles, '/api/files/<filename>')
+api.add_resource(VistaFile, '/api/files/<int:id_task>')
 
 jwt = JWTManager(app)
 if __name__ == '__main__':

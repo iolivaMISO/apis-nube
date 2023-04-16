@@ -161,6 +161,13 @@ class VistaFiles(Resource):
         return response
 
 
+class VistaFile(Resource):
+    @jwt_required()
+    def get(self, id_task):
+        task = Tarea.query.get_or_404(id_task)
+        return {"url": task.file_name_converted}
+
+
 def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].upper() in ALLOWED_EXTENSIONS
