@@ -122,7 +122,7 @@ class VistaTasks(Resource):
         if archivo:
             filename = secure_filename(archivo.filename)
             file_name_converted = os.path.splitext(filename)[
-                                      0] + '.' + new_format
+                0] + '.' + new_format
             current_user = Usuario.query.filter(
                 Usuario.username == get_jwt_identity()).first()
 
@@ -145,16 +145,25 @@ class VistaFiles(Resource):
     @jwt_required()
     def get(self, filename):
         filename = secure_filename(filename)
-        task = Tarea.query.filter(Tarea.file_name == filename.lower()).order_by(Tarea.time_stamp.desc()).first()
+        task = Tarea.query.filter(Tarea.file_name == filename.lower()).order_by(
+            Tarea.time_stamp.desc()).first()
         is_original = True
         if task is None:
-            task = Tarea.query.filter(Tarea.file_name_converted == filename.lower()).order_by(Tarea.time_stamp.desc()).first()
+            task = Tarea.query.filter(Tarea.file_name_converted == filename.lower()).order_by(
+                Tarea.time_stamp.desc()).first()
             if task is None:
                 return {"mensaje": "filename no existe"}, 404
             else:
                 is_original = False
         response = download_file_converted(task, filename, is_original)
         return response
+
+
+class VistaFile(Resource):
+    @jwt_required()
+    def get(self, id_task):
+        task = Tarea.query.get_or_404(id_task)
+        return {"url": task.file_name_converted}
 
 
 def allowed_file(filename):
@@ -176,7 +185,8 @@ def download_file_converted(task, file_name, is_original):
     # create a response object
     response = make_response(tar_file.getvalue())
     # set the Content-Disposition header to trigger a file download
-    response.headers.set('Content-Disposition', 'attachment', filename=file_name)
+    response.headers.set('Content-Disposition',
+                         'attachment', filename=file_name)
     # set the MIME type for the response
     response.headers.set('Content-Type', 'application/x-gzip')
     # return the response
