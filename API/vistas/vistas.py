@@ -84,7 +84,8 @@ class VistaLogin(Resource):
 class VistaTask(Resource):
     @jwt_required()
     def get(self, id_task):
-        return tarea_schema.dump(Tarea.query.get_or_404(id_task))
+        return tarea_schema.dump(Tarea.query.with_entities(Tarea.id, Tarea.file_name, Tarea.file_name_converted,
+                                                           Tarea.time_stamp, Tarea.new_format, Tarea.status).filter(Tarea.id == id_task).first())
 
     @jwt_required()
     def delete(self, id_task):
@@ -105,7 +106,8 @@ class VistaTasks(Resource):
         if query_order != None and query_order not in ('0', '1'):
             return {"mensaje": "order debe ser numerico: 0 o 1"}, 400
         if (query_order == '1'):
-            tareas = Tarea.query.order_by(Tarea.id.desc()).limit(query_max)
+            tareas = Tarea.query.with_entities(Tarea.id, Tarea.file_name, Tarea.file_name_converted,
+                                               Tarea.time_stamp, Tarea.new_format, Tarea.status).order_by(Tarea.id.desc()).limit(query_max)
         else:
             tareas = Tarea.query.with_entities(Tarea.id, Tarea.file_name, Tarea.file_name_converted,
                                                Tarea.time_stamp, Tarea.new_format, Tarea.status).limit(query_max)
@@ -122,7 +124,7 @@ class VistaTasks(Resource):
         if archivo:
             filename = secure_filename(archivo.filename)
             file_name_converted = os.path.splitext(filename)[
-                                      0] + '.' + new_format
+                0] + '.' + new_format
             current_user = Usuario.query.filter(
                 Usuario.username == get_jwt_identity()).first()
 
@@ -145,10 +147,12 @@ class VistaFiles(Resource):
     @jwt_required()
     def get(self, filename):
         filename = secure_filename(filename)
-        task = Tarea.query.filter(Tarea.file_name == filename.lower()).order_by(Tarea.time_stamp.desc()).first()
+        task = Tarea.query.filter(Tarea.file_name == filename.lower()).order_by(
+            Tarea.time_stamp.desc()).first()
         is_original = True
         if task is None:
-            task = Tarea.query.filter(Tarea.file_name_converted == filename.lower()).order_by(Tarea.time_stamp.desc()).first()
+            task = Tarea.query.filter(Tarea.file_name_converted == filename.lower()).order_by(
+                Tarea.time_stamp.desc()).first()
             if task is None:
                 return {"mensaje": "filename no existe"}, 404
             else:
@@ -176,7 +180,8 @@ def download_file_converted(task, file_name, is_original):
     # create a response object
     response = make_response(tar_file.getvalue())
     # set the Content-Disposition header to trigger a file download
-    response.headers.set('Content-Disposition', 'attachment', filename=file_name)
+    response.headers.set('Content-Disposition',
+                         'attachment', filename=file_name)
     # set the MIME type for the response
     response.headers.set('Content-Type', 'application/x-gzip')
     # return the response

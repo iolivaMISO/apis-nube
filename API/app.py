@@ -5,7 +5,7 @@ from vistas import VistaSignup, VistaLogin, VistaFiles, VistaTask, VistaTasks
 from modelos import db
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
-IP='192.168.0.157'
+IP='localhost'
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://admin:admin@{IP}:5432/apisnube'
