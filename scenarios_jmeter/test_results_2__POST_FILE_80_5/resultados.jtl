@@ -1,0 +1,84 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1681679455003,175,Signup,200,OK,Signup 1-1,text,true,,207,336,1,1,http://54.90.185.127/api/auth/signup,170,0,92
+1681679455188,124,Login,200,OK,Login 2-1,text,true,,459,262,1,1,http://54.90.185.127/api/auth/login,124,0,60
+1681679455356,2,Imprimir token_response,200,OK,Login 2-1,text,true,,628,0,1,1,null,0,0,0
+1681679459016,169341,Upload de archivo,200,OK,Upload de archivo 3-59,text,true,,203,18186872,80,80,http://54.90.185.127/api/tasks,169341,0,63
+1681679455424,177114,Upload de archivo,200,OK,Upload de archivo 3-2,text,true,,203,18186864,79,79,http://54.90.185.127/api/tasks,177114,0,61
+1681679456745,176109,Upload de archivo,200,OK,Upload de archivo 3-23,text,true,,203,18186852,78,78,http://54.90.185.127/api/tasks,176109,0,62
+1681679455360,186915,Upload de archivo,200,OK,Upload de archivo 3-1,text,true,,203,18186876,77,77,http://54.90.185.127/api/tasks,186915,0,72
+1681679455802,203444,Upload de archivo,200,OK,Upload de archivo 3-8,text,true,,203,18186864,76,76,http://54.90.185.127/api/tasks,203444,0,66
+1681679455487,203897,Upload de archivo,200,OK,Upload de archivo 3-3,text,true,,203,18186864,75,75,http://54.90.185.127/api/tasks,203897,0,62
+1681679455992,204005,Upload de archivo,200,OK,Upload de archivo 3-11,text,true,,203,18186844,74,74,http://54.90.185.127/api/tasks,204005,0,66
+1681679456054,206166,Upload de archivo,200,OK,Upload de archivo 3-12,text,true,,203,18186864,73,73,http://54.90.185.127/api/tasks,206166,0,65
+1681679457753,208029,Upload de archivo,200,OK,Upload de archivo 3-39,text,true,,203,18186856,72,72,http://54.90.185.127/api/tasks,208029,0,63
+1681679456682,211048,Upload de archivo,200,OK,Upload de archivo 3-22,text,true,,203,18186880,71,71,http://54.90.185.127/api/tasks,211048,0,62
+1681679458575,210413,Upload de archivo,200,OK,Upload de archivo 3-52,text,true,,203,18186872,70,70,http://54.90.185.127/api/tasks,210413,0,143
+1681679456872,212209,Upload de archivo,200,OK,Upload de archivo 3-25,text,true,,203,18186872,69,69,http://54.90.185.127/api/tasks,212209,0,63
+1681679458770,212625,Upload de archivo,200,OK,Upload de archivo 3-55,text,true,,203,18186876,68,68,http://54.90.185.127/api/tasks,212625,0,113
+1681679458005,214958,Upload de archivo,200,OK,Upload de archivo 3-43,text,true,,203,18186880,67,67,http://54.90.185.127/api/tasks,214958,0,67
+1681679458831,214173,Upload de archivo,200,OK,Upload de archivo 3-56,text,true,,203,18186852,66,66,http://54.90.185.127/api/tasks,214173,0,93
+1681679459896,213554,Upload de archivo,200,OK,Upload de archivo 3-73,text,true,,203,18186880,65,65,http://54.90.185.127/api/tasks,213554,0,61
+1681679459959,218431,Upload de archivo,200,OK,Upload de archivo 3-74,text,true,,203,18186868,64,64,http://54.90.185.127/api/tasks,218431,0,63
+1681679455738,223123,Upload de archivo,200,OK,Upload de archivo 3-7,text,true,,203,18186880,63,63,http://54.90.185.127/api/tasks,223123,0,68
+1681679458069,221368,Upload de archivo,200,OK,Upload de archivo 3-44,text,true,,203,18186864,62,62,http://54.90.185.127/api/tasks,221368,0,90
+1681679455614,226570,Upload de archivo,200,OK,Upload de archivo 3-5,text,true,,203,18186840,61,61,http://54.90.185.127/api/tasks,226570,0,68
+1681679458132,226320,Upload de archivo,200,OK,Upload de archivo 3-45,text,true,,203,18186880,60,60,http://54.90.185.127/api/tasks,226320,0,78
+1681679456999,229099,Upload de archivo,200,OK,Upload de archivo 3-27,text,true,,203,18186840,59,59,http://54.90.185.127/api/tasks,229099,0,63
+1681679459330,227541,Upload de archivo,200,OK,Upload de archivo 3-64,text,true,,203,18186856,58,58,http://54.90.185.127/api/tasks,227541,0,64
+1681679459076,228706,Upload de archivo,200,OK,Upload de archivo 3-60,text,true,,203,18186860,57,57,http://54.90.185.127/api/tasks,228706,0,63
+1681679457628,231567,Upload de archivo,200,OK,Upload de archivo 3-37,text,true,,203,18186876,56,56,http://54.90.185.127/api/tasks,231567,0,64
+1681679455675,235402,Upload de archivo,200,OK,Upload de archivo 3-6,text,true,,203,18186856,55,55,http://54.90.185.127/api/tasks,235402,0,69
+1681679457061,234222,Upload de archivo,200,OK,Upload de archivo 3-28,text,true,,203,18186840,54,54,http://54.90.185.127/api/tasks,234222,0,61
+1681679458707,233394,Upload de archivo,200,OK,Upload de archivo 3-54,text,true,,203,18186852,53,53,http://54.90.185.127/api/tasks,233394,0,143
+1681679457880,237342,Upload de archivo,200,OK,Upload de archivo 3-41,text,true,,203,18186880,52,52,http://54.90.185.127/api/tasks,237342,0,63
+1681679459579,236132,Upload de archivo,200,OK,Upload de archivo 3-68,text,true,,203,18186860,51,51,http://54.90.185.127/api/tasks,236132,0,63
+1681679455865,239960,Upload de archivo,200,OK,Upload de archivo 3-9,text,true,,203,18186848,50,50,http://54.90.185.127/api/tasks,239960,0,64
+1681679455927,243294,Upload de archivo,200,OK,Upload de archivo 3-10,text,true,,203,18186852,49,49,http://54.90.185.127/api/tasks,243294,0,68
+1681679457942,242033,Upload de archivo,200,OK,Upload de archivo 3-42,text,true,,203,18186852,48,48,http://54.90.185.127/api/tasks,242033,0,62
+1681679460021,240009,Upload de archivo,200,OK,Upload de archivo 3-75,text,true,,203,18186880,47,47,http://54.90.185.127/api/tasks,240009,0,62
+1681679456179,248057,Upload de archivo,200,OK,Upload de archivo 3-14,text,true,,203,18186848,46,46,http://54.90.185.127/api/tasks,248057,0,63
+1681679456306,249154,Upload de archivo,200,OK,Upload de archivo 3-16,text,true,,203,18186864,45,45,http://54.90.185.127/api/tasks,249154,0,63
+1681679458513,246971,Upload de archivo,200,OK,Upload de archivo 3-51,text,true,,203,18186876,44,44,http://54.90.185.127/api/tasks,246971,0,149
+1681679456809,250574,Upload de archivo,200,OK,Upload de archivo 3-24,text,true,,203,18186848,43,43,http://54.90.185.127/api/tasks,250574,0,63
+1681679456243,253197,Upload de archivo,200,OK,Upload de archivo 3-15,text,true,,203,18186852,42,42,http://54.90.185.127/api/tasks,253197,0,66
+1681679455550,255879,Upload de archivo,200,OK,Upload de archivo 3-4,text,true,,203,18186844,41,41,http://54.90.185.127/api/tasks,255879,0,65
+1681679456619,255305,Upload de archivo,200,OK,Upload de archivo 3-21,text,true,,203,18186864,40,40,http://54.90.185.127/api/tasks,255305,0,66
+1681679458320,254419,Upload de archivo,200,OK,Upload de archivo 3-48,text,true,,203,18186864,39,39,http://54.90.185.127/api/tasks,254419,0,66
+1681679459391,255568,Upload de archivo,200,OK,Upload de archivo 3-65,text,true,,203,18186840,38,38,http://54.90.185.127/api/tasks,255568,0,63
+1681679458953,259047,Upload de archivo,200,OK,Upload de archivo 3-58,text,true,,203,18186848,37,37,http://54.90.185.127/api/tasks,259047,0,68
+1681679457123,260890,Upload de archivo,200,OK,Upload de archivo 3-29,text,true,,203,18186860,36,36,http://54.90.185.127/api/tasks,260890,0,63
+1681679456117,262039,Upload de archivo,200,OK,Upload de archivo 3-13,text,true,,203,18186864,35,35,http://54.90.185.127/api/tasks,262039,0,65
+1681679459203,266500,Upload de archivo,200,OK,Upload de archivo 3-62,text,true,,203,18186856,34,34,http://54.90.185.127/api/tasks,266500,0,64
+1681679457187,268555,Upload de archivo,200,OK,Upload de archivo 3-30,text,true,,203,18186864,33,33,http://54.90.185.127/api/tasks,268555,0,65
+1681679458890,267113,Upload de archivo,200,OK,Upload de archivo 3-57,text,true,,203,18186864,32,32,http://54.90.185.127/api/tasks,267113,0,125
+1681679459832,269017,Upload de archivo,200,OK,Upload de archivo 3-72,text,true,,203,18186864,31,31,http://54.90.185.127/api/tasks,269017,0,63
+1681679457565,271598,Upload de archivo,200,OK,Upload de archivo 3-36,text,true,,203,18186860,30,30,http://54.90.185.127/api/tasks,271598,0,63
+1681679459518,269765,Upload de archivo,200,OK,Upload de archivo 3-67,text,true,,203,18186844,29,29,http://54.90.185.127/api/tasks,269765,0,62
+1681679456559,275430,Upload de archivo,200,OK,Upload de archivo 3-20,text,true,,203,18186864,28,28,http://54.90.185.127/api/tasks,275430,0,65
+1681679456495,276153,Upload de archivo,200,OK,Upload de archivo 3-19,text,true,,203,18186844,27,27,http://54.90.185.127/api/tasks,276153,0,67
+1681679457817,274911,Upload de archivo,200,OK,Upload de archivo 3-40,text,true,,203,18186868,26,26,http://54.90.185.127/api/tasks,274911,0,62
+1681679457250,278096,Upload de archivo,200,OK,Upload de archivo 3-31,text,true,,203,18186856,25,25,http://54.90.185.127/api/tasks,278096,0,70
+1681679459455,277483,Upload de archivo,200,OK,Upload de archivo 3-66,text,true,,203,18186856,24,24,http://54.90.185.127/api/tasks,277483,0,61
+1681679457507,279654,Upload de archivo,200,OK,Upload de archivo 3-35,text,true,,203,18186844,23,23,http://54.90.185.127/api/tasks,279654,0,62
+1681679457377,280611,Upload de archivo,200,OK,Upload de archivo 3-33,text,true,,203,18186844,22,22,http://54.90.185.127/api/tasks,280611,0,69
+1681679459140,280240,Upload de archivo,200,OK,Upload de archivo 3-61,text,true,,203,18186864,21,21,http://54.90.185.127/api/tasks,280240,0,63
+1681679460148,280630,Upload de archivo,200,OK,Upload de archivo 3-77,text,true,,203,18186852,20,20,http://54.90.185.127/api/tasks,280630,0,64
+1681679458257,282634,Upload de archivo,200,OK,Upload de archivo 3-47,text,true,,203,18186852,19,19,http://54.90.185.127/api/tasks,282634,0,63
+1681679458446,283691,Upload de archivo,200,OK,Upload de archivo 3-50,text,true,,203,18186848,18,18,http://54.90.185.127/api/tasks,283691,0,130
+1681679456934,286360,Upload de archivo,504,Gateway Time-out,Upload de archivo 3-26,text,false,,347,18186852,17,17,http://54.90.185.127/api/tasks,286360,0,62
+1681679458193,285102,Upload de archivo,504,Gateway Time-out,Upload de archivo 3-46,text,false,,347,18186852,17,17,http://54.90.185.127/api/tasks,285102,0,65
+1681679459707,283905,Upload de archivo,200,OK,Upload de archivo 3-70,text,true,,203,18186872,15,15,http://54.90.185.127/api/tasks,283905,0,63
+1681679460211,283923,Upload de archivo,200,OK,Upload de archivo 3-78,text,true,,203,18186840,14,14,http://54.90.185.127/api/tasks,283923,0,62
+1681679460273,283891,Upload de archivo,504,Gateway Time-out,Upload de archivo 3-79,text,false,,347,18186856,13,13,http://54.90.185.127/api/tasks,283891,0,63
+1681679457691,286748,Upload de archivo,504,Gateway Time-out,Upload de archivo 3-38,text,false,,347,18186868,12,12,http://54.90.185.127/api/tasks,286748,0,63
+1681679457314,287125,Upload de archivo,504,Gateway Time-out,Upload de archivo 3-32,text,false,,347,18186880,12,12,http://54.90.185.127/api/tasks,287125,0,67
+1681679460084,284371,Upload de archivo,504,Gateway Time-out,Upload de archivo 3-76,text,false,,347,18186868,10,10,http://54.90.185.127/api/tasks,284370,0,63
+1681679459643,285756,Upload de archivo,504,Gateway Time-out,Upload de archivo 3-69,text,false,,347,18186852,9,9,http://54.90.185.127/api/tasks,285756,0,60
+1681679459770,286081,Upload de archivo,504,Gateway Time-out,Upload de archivo 3-71,text,false,,347,18186868,8,8,http://54.90.185.127/api/tasks,286081,0,63
+1681679456367,289912,Upload de archivo,504,Gateway Time-out,Upload de archivo 3-17,text,false,,347,18186864,7,7,http://54.90.185.127/api/tasks,289912,0,65
+1681679459269,287021,Upload de archivo,504,Gateway Time-out,Upload de archivo 3-63,text,false,,347,18186844,6,6,http://54.90.185.127/api/tasks,287021,0,64
+1681679456431,290044,Upload de archivo,200,OK,Upload de archivo 3-18,text,true,,203,18186840,5,5,http://54.90.185.127/api/tasks,290044,0,62
+1681679458663,287956,Upload de archivo,504,Gateway Time-out,Upload de archivo 3-53,text,false,,347,18186864,4,4,http://54.90.185.127/api/tasks,287956,0,146
+1681679460336,287705,Upload de archivo,200,OK,Upload de archivo 3-80,text,true,,203,18186840,3,3,http://54.90.185.127/api/tasks,287705,0,62
+1681679458386,289707,Upload de archivo,200,OK,Upload de archivo 3-49,text,true,,203,18186840,2,2,http://54.90.185.127/api/tasks,289707,0,80
+1681679457439,291738,Upload de archivo,200,OK,Upload de archivo 3-34,text,true,,203,18186868,1,1,http://54.90.185.127/api/tasks,291738,0,67

@@ -1,0 +1,24 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1681683002766,172,Signup,200,OK,Signup 1-1,text,true,,207,335,1,1,http://3.86.115.177/api/auth/signup,169,0,99
+1681683002947,121,Login,200,OK,Login 2-1,text,true,,459,261,1,1,http://3.86.115.177/api/auth/login,121,0,60
+1681683003114,2,Imprimir token_response,200,OK,Login 2-1,text,true,,626,0,1,1,null,0,0,0
+1681683003119,527,Descargar archivo,200,OK,Download 3-1,text,true,,1536466,476,3,3,http://3.86.115.177/api/files/archivo.7z,145,0,60
+1681683003324,765,Descargar archivo,200,OK,Download 3-2,text,true,,1536466,476,4,4,http://3.86.115.177/api/files/archivo.7z,143,0,65
+1681683003528,590,Descargar archivo,200,OK,Download 3-3,text,true,,1536466,476,3,3,http://3.86.115.177/api/files/archivo.7z,146,0,60
+1681683003919,603,Descargar archivo,200,OK,Download 3-5,text,true,,1536466,476,5,5,http://3.86.115.177/api/files/archivo.7z,163,0,61
+1681683003719,829,Descargar archivo,200,OK,Download 3-4,text,true,,1536466,476,4,4,http://3.86.115.177/api/files/archivo.7z,141,0,64
+1681683004121,527,Descargar archivo,200,OK,Download 3-6,text,true,,1536466,476,3,3,http://3.86.115.177/api/files/archivo.7z,140,0,62
+1681683004320,590,Descargar archivo,200,OK,Download 3-7,text,true,,1536466,476,3,3,http://3.86.115.177/api/files/archivo.7z,160,0,59
+1681683004519,562,Descargar archivo,200,OK,Download 3-8,text,true,,1536466,476,3,3,http://3.86.115.177/api/files/archivo.7z,138,0,61
+1681683004719,574,Descargar archivo,200,OK,Download 3-9,text,true,,1536466,476,3,3,http://3.86.115.177/api/files/archivo.7z,153,0,59
+1681683004921,581,Descargar archivo,200,OK,Download 3-10,text,true,,1536466,476,3,3,http://3.86.115.177/api/files/archivo.7z,143,0,63
+1681683005320,1370,Descargar archivo,200,OK,Download 3-12,text,true,,1536466,476,8,8,http://3.86.115.177/api/files/archivo.7z,148,0,64
+1681683005121,1667,Descargar archivo,200,OK,Download 3-11,text,true,,1536466,476,8,8,http://3.86.115.177/api/files/archivo.7z,157,0,70
+1681683005920,1465,Descargar archivo,200,OK,Download 3-15,text,true,,1536466,476,8,8,http://3.86.115.177/api/files/archivo.7z,616,0,229
+1681683006718,678,Descargar archivo,200,OK,Download 3-19,text,true,,1536466,476,7,7,http://3.86.115.177/api/files/archivo.7z,261,0,96
+1681683005720,1735,Descargar archivo,200,OK,Download 3-14,text,true,,1536466,476,6,6,http://3.86.115.177/api/files/archivo.7z,567,0,274
+1681683005519,1975,Descargar archivo,200,OK,Download 3-13,text,true,,1536466,476,5,5,http://3.86.115.177/api/files/archivo.7z,147,0,59
+1681683006918,605,Descargar archivo,200,OK,Download 3-20,text,true,,1536466,476,4,4,http://3.86.115.177/api/files/archivo.7z,183,0,103
+1681683006119,1602,Descargar archivo,200,OK,Download 3-16,text,true,,1536466,476,3,3,http://3.86.115.177/api/files/archivo.7z,569,0,93
+1681683006519,1258,Descargar archivo,200,OK,Download 3-18,text,true,,1536466,476,2,2,http://3.86.115.177/api/files/archivo.7z,213,0,61
+1681683006320,1587,Descargar archivo,200,OK,Download 3-17,text,true,,1536466,476,1,1,http://3.86.115.177/api/files/archivo.7z,371,0,61

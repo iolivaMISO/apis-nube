@@ -1,0 +1,26 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1681676862772,174,Signup,200,OK,Signup 1-1,text,true,,207,336,1,1,http://54.90.185.127/api/auth/signup,171,0,96
+1681676862955,122,Login,200,OK,Login 2-1,text,true,,459,262,1,1,http://54.90.185.127/api/auth/login,122,0,60
+1681676863126,2,Imprimir token_response,200,OK,Login 2-1,text,true,,628,0,1,1,null,0,0,0
+1681676863131,20075,Upload de archivo,200,OK,Upload de archivo 3-1,text,true,,203,18186872,20,20,http://54.90.185.127/api/tasks,20075,0,70
+1681676865131,24556,Upload de archivo,200,OK,Upload de archivo 3-11,text,true,,203,18186848,20,20,http://54.90.185.127/api/tasks,24555,0,63
+1681676864133,30584,Upload de archivo,200,OK,Upload de archivo 3-6,text,true,,203,18186856,20,20,http://54.90.185.127/api/tasks,30584,0,62
+1681676866535,37528,Upload de archivo,200,OK,Upload de archivo 3-18,text,true,,203,18186848,19,19,http://54.90.185.127/api/tasks,37528,0,69
+1681676865933,41177,Upload de archivo,200,OK,Upload de archivo 3-15,text,true,,203,18186856,18,18,http://54.90.185.127/api/tasks,41177,0,64
+1681676865336,47185,Upload de archivo,200,OK,Upload de archivo 3-12,text,true,,203,18186852,17,17,http://54.90.185.127/api/tasks,47185,0,62
+1681676863340,49865,Upload de archivo,200,OK,Upload de archivo 3-2,text,true,,203,18186848,16,16,http://54.90.185.127/api/tasks,49865,0,65
+1681676864934,54586,Upload de archivo,200,OK,Upload de archivo 3-10,text,true,,203,18186840,15,15,http://54.90.185.127/api/tasks,54586,0,67
+1681676866133,54677,Upload de archivo,200,OK,Upload de archivo 3-16,text,true,,203,18186868,14,14,http://54.90.185.127/api/tasks,54677,0,79
+1681676863937,58083,Upload de archivo,200,OK,Upload de archivo 3-5,text,true,,203,18186880,13,13,http://54.90.185.127/api/tasks,58083,0,68
+1681676864732,59955,Upload de archivo,200,OK,Upload de archivo 3-9,text,true,,203,18186876,12,12,http://54.90.185.127/api/tasks,59955,0,62
+1681676865732,61580,Upload de archivo,200,OK,Upload de archivo 3-14,text,true,,203,18186848,11,11,http://54.90.185.127/api/tasks,61580,0,66
+1681676864331,64048,Upload de archivo,200,OK,Upload de archivo 3-7,text,true,,203,18186872,10,10,http://54.90.185.127/api/tasks,64048,0,61
+1681676866733,62385,Upload de archivo,200,OK,Upload de archivo 3-19,text,true,,203,18186852,9,9,http://54.90.185.127/api/tasks,62385,0,65
+1681676863543,66949,Upload de archivo,200,OK,Upload de archivo 3-3,text,true,,203,18186868,8,8,http://54.90.185.127/api/tasks,66949,0,65
+1681676866931,65990,Upload de archivo,200,OK,Upload de archivo 3-20,text,true,,203,18186868,7,7,http://54.90.185.127/api/tasks,65990,0,64
+1681676864532,70009,Upload de archivo,200,OK,Upload de archivo 3-8,text,true,,203,18186856,6,6,http://54.90.185.127/api/tasks,70009,0,61
+1681676863734,70948,Upload de archivo,200,OK,Upload de archivo 3-4,text,true,,203,18186864,5,5,http://54.90.185.127/api/tasks,70948,0,67
+1681676883208,51659,Upload de archivo,200,OK,Upload de archivo 3-1,text,true,,203,18186848,4,4,http://54.90.185.127/api/tasks,51659,0,0
+1681676865534,73231,Upload de archivo,200,OK,Upload de archivo 3-13,text,true,,203,18186852,3,3,http://54.90.185.127/api/tasks,73231,0,63
+1681676866332,72909,Upload de archivo,200,OK,Upload de archivo 3-17,text,true,,203,18186844,2,2,http://54.90.185.127/api/tasks,72909,0,116
+1681676889686,49597,Upload de archivo,200,OK,Upload de archivo 3-11,text,true,,203,18186848,1,1,http://54.90.185.127/api/tasks,49597,0,0
