@@ -22,8 +22,7 @@ def enviar_accion(id, new_format):
 
 
 ALLOWED_EXTENSIONS = {'ZIP', '7Z', 'TAR.GZ', 'TAR.BZ2'}
-FOLDER_IN = concat(os.getcwd(), '/files/IN')
-FOLDER_OUT = '/files/OUT'
+ROOT_PATH = concat(os.getcwd(), '/files')
 
 tarea_schema = TareaSchema()
 
@@ -127,19 +126,28 @@ class VistaTasks(Resource):
                 0] + '.' + new_format
             current_user = Usuario.query.filter(
                 Usuario.username == get_jwt_identity()).first()
-
             nueva_tarea = Tarea(file_name=filename.lower(),
-                                new_format=new_format, usuario=current_user.id, file_data_name=archivo.read(),
-                                file_name_converted=file_name_converted.lower())
+                                file_name_converted=file_name_converted.lower(),
+                                new_format=new_format,
+                                usuario=current_user.id,
+                                file_path='',
+                                file_path_converted=''
+                                )
             db.session.add(nueva_tarea)
             db.session.commit()
-            filename = os.path.join(
-                FOLDER_IN, str(nueva_tarea.id), filename)
-
-            root_folder = os.path.dirname(filename)
+            file_path = os.path.join(
+                ROOT_PATH, str(nueva_tarea.id), filename)
+            file_path_converted = os.path.join(
+                ROOT_PATH, str(nueva_tarea.id), file_name_converted)
+            
+            root_folder = os.path.dirname(file_path)
             os.makedirs(root_folder, exist_ok=True)
-            archivo.save(filename)
-            enviar_accion.apply_async((nueva_tarea.id, new_format))
+            archivo.save(file_path)
+
+            nueva_tarea.file_path = file_path
+            nueva_tarea.file_path_converted = file_path_converted
+            db.session.commit()
+            #enviar_accion.apply_async((nueva_tarea.id, new_format))
         return {"mensaje": "procesado con éxito"}
 
 
@@ -165,17 +173,12 @@ class VistaFile(Resource):
     @jwt_required()
     def get(self, id_task):
         task = Tarea.query.get_or_404(id_task)
-        return {"url": task.file_name_converted}
+        return {"url": task.file_path_converted}
 
 
 def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].upper() in ALLOWED_EXTENSIONS
-
-
-# def get_file_by_id_task(id_task):
-#     tarea = Tarea.query.get_or_404(id_task)
-#     return io.BytesIO(tarea.file_data_name)
 
 
 def download_file_converted(task, file_name, is_original):
