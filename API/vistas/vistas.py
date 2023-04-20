@@ -22,7 +22,7 @@ def enviar_accion(id, new_format):
 
 
 ALLOWED_EXTENSIONS = {'ZIP', '7Z', 'TAR.GZ', 'TAR.BZ2'}
-ROOT_PATH = concat(os.getcwd(), '/files')
+ROOT_PATH = concat(os.getcwd(), '/nfs/apis_nube')
 
 tarea_schema = TareaSchema()
 
