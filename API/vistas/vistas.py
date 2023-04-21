@@ -13,7 +13,7 @@ import os
 from operator import concat
 from werkzeug.utils import secure_filename
 
-queque = Celery(__name__, broker='redis://localhost:6379')
+queque = Celery(__name__, broker='redis://10.128.0.6:6379')
 
 
 @queque.task(name="queque_envio")
@@ -147,7 +147,7 @@ class VistaTasks(Resource):
             nueva_tarea.file_path = file_path
             nueva_tarea.file_path_converted = file_path_converted
             db.session.commit()
-            #enviar_accion.apply_async((nueva_tarea.id, new_format))
+            enviar_accion.apply_async((nueva_tarea.id, new_format))
         return {"mensaje": "procesado con éxito"}
 
 
