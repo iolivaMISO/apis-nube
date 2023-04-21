@@ -37,11 +37,11 @@ def process_to_convert(new_format, nueva_tarea_id):
 
 def get_file_by_id_task(id_task):
     tarea = Tarea.query.get_or_404(id_task)
-    return io.BytesIO(tarea.file_data_name)
+    return io.BytesIO(tarea.file_path)
 
 
 def convert_file_tar_gz(id_task, file):
-    tarea = Tarea.query.get_or_404(id_task)
+    #tarea = Tarea.query.get_or_404(id_task)
     # extract the contents of the ZIP file to a temporary directory
     with zipfile.ZipFile(file, 'r') as zip_ref:
         tmp_dir = 'tmp'
@@ -55,8 +55,8 @@ def convert_file_tar_gz(id_task, file):
         # get the bytes of the TAR.GZ file
         tar_bytes = tar_buffer.getvalue()
 
-    tarea.file_data_converted = tar_bytes
-    db.session.commit()
+    #tarea.file_data_converted = tar_bytes
+    #db.session.commit()
 
     # delete the temporary directory
     shutil.rmtree(tmp_dir)
