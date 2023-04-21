@@ -10,7 +10,7 @@ from ..modelos import Tarea
 from ..app import db
 from celery.signals import task_postrun
 
-queue = Celery('tasks', broker='redis://localhost:6379/0')
+queue = Celery('tasks', broker='redis://10.128.0.6:6379/0')
 
 
 @queue.task(name="queque_envio")
