@@ -13,7 +13,7 @@ import os
 from operator import concat
 from werkzeug.utils import secure_filename
 
-queque = Celery(__name__, broker='redis://localhost:6379')
+queque = Celery(__name__, broker='redis://10.128.0.6:6379')
 
 
 @queque.task(name="queque_envio")
@@ -22,7 +22,7 @@ def enviar_accion(id, new_format):
 
 
 ALLOWED_EXTENSIONS = {'ZIP', '7Z', 'TAR.GZ', 'TAR.BZ2'}
-ROOT_PATH = '/media/cbarreiro/Storage/camil/Documents/UniversidadAndesProyectos/nube/Nube_Api_Uniandes/nfs'
+ROOT_PATH = '/nfs/apis_nube'
 
 tarea_schema = TareaSchema()
 
