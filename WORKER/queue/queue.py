@@ -10,7 +10,7 @@ from ..modelos import Tarea
 from ..app import db
 from celery.signals import task_postrun
 
-queue = Celery('tasks', broker='redis://localhost:6379/0')
+queue = Celery('tasks', broker='redis://10.128.0.6:6379/0')
 
 
 @queue.task(name="queque_envio")
@@ -26,6 +26,7 @@ def enviar_accion(id, new_format):
 def close_session(*args, **kwargs):
     db.session.remove()
 
+
 def process_to_convert(new_format, nueva_tarea_id):
     file = get_file_by_id_task(nueva_tarea_id)
     if new_format.upper() == 'TAR.GZ':
@@ -35,9 +36,12 @@ def process_to_convert(new_format, nueva_tarea_id):
     elif new_format.upper() == 'TAR.BZ2':
         convert_file_tar_bz2(nueva_tarea_id, file)
 
+
 def get_file_by_id_task(id_task):
     tarea = Tarea.query.get_or_404(id_task)
-    return io.BytesIO(tarea.file_data_name)
+
+    with open(tarea.file_path, 'rb') as file:
+        return io.BytesIO(file.read())
 
 
 def convert_file_tar_gz(id_task, file):
@@ -54,16 +58,16 @@ def convert_file_tar_gz(id_task, file):
 
         # get the bytes of the TAR.GZ file
         tar_bytes = tar_buffer.getvalue()
-
-    tarea.file_data_converted = tar_bytes
-    db.session.commit()
+    with open(tarea.file_path_converted, 'wb') as archivo:
+        archivo.write(tar_bytes)
+    # tarea.file_data_converted = tar_bytes
+    # db.session.commit()
 
     # delete the temporary directory
     shutil.rmtree(tmp_dir)
 
 
 def convert_file_tar_bz2(id_task, file):
-
     tarea = Tarea.query.get_or_404(id_task)
 
     # extract the contents of the ZIP file to a temporary directory
@@ -79,8 +83,10 @@ def convert_file_tar_bz2(id_task, file):
         # get the bytes of the TAR.BZ2 file
         tar_bytes = tar_buffer.getvalue()
 
-    tarea.file_data_converted = tar_bytes
-    db.session.commit()
+    with open(tarea.file_path_converted, 'wb') as archivo:
+        archivo.write(tar_bytes)
+    # tarea.file_data_converted = tar_bytes
+    # db.session.commit()
 
     # delete the temporary directory
     shutil.rmtree(tmp_dir)
@@ -100,9 +106,10 @@ def convert_file_7z(id_task, file):
 
         # get the bytes of the 7Z file
         archive_bytes = archive_buffer.getvalue()
-
-    tarea.file_data_converted = archive_bytes
-    db.session.commit()
+    with open(tarea.file_path_converted, 'wb') as archivo:
+        archivo.write(archive_bytes)
+    # tarea.file_data_converted = archive_bytes
+    # db.session.commit()
 
     # delete the temporary directory
     shutil.rmtree(tmp_dir)
