@@ -41,7 +41,7 @@ def get_file_by_id_task(id_task):
 
 
 def convert_file_tar_gz(id_task, file):
-    #tarea = Tarea.query.get_or_404(id_task)
+    tarea = Tarea.query.get_or_404(id_task)
     # extract the contents of the ZIP file to a temporary directory
     with zipfile.ZipFile(file, 'r') as zip_ref:
         tmp_dir = 'tmp'
@@ -54,7 +54,8 @@ def convert_file_tar_gz(id_task, file):
 
         # get the bytes of the TAR.GZ file
         tar_bytes = tar_buffer.getvalue()
-
+    with open(tarea.file_path_converted, 'wb') as archivo:
+        archivo.write(tar_bytes)
     #tarea.file_data_converted = tar_bytes
     #db.session.commit()
 
@@ -79,8 +80,10 @@ def convert_file_tar_bz2(id_task, file):
         # get the bytes of the TAR.BZ2 file
         tar_bytes = tar_buffer.getvalue()
 
-    tarea.file_data_converted = tar_bytes
-    db.session.commit()
+    with open(tarea.file_path_converted, 'wb') as archivo:
+        archivo.write(tar_bytes)
+    #tarea.file_data_converted = tar_bytes
+    #db.session.commit()
 
     # delete the temporary directory
     shutil.rmtree(tmp_dir)
@@ -100,9 +103,10 @@ def convert_file_7z(id_task, file):
 
         # get the bytes of the 7Z file
         archive_bytes = archive_buffer.getvalue()
-
-    tarea.file_data_converted = archive_bytes
-    db.session.commit()
+    with open(tarea.file_path_converted, 'wb') as archivo:
+        archivo.write(archive_bytes)
+    #tarea.file_data_converted = archive_bytes
+    #db.session.commit()
 
     # delete the temporary directory
     shutil.rmtree(tmp_dir)
