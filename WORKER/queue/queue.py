@@ -1,44 +1,32 @@
-import io
+mport io
 import shutil
 import tarfile
 import zipfile
 import py7zr
-from flask import make_response
+from celery import Celery
 from google.cloud import pubsub_v1
+from flask import make_response
+
 from ..modelos import Tarea
 from ..app import db
-from celery import Celery
 from celery.signals import task_postrun
 
-queue = Celery('tasks', broker='google-cloud-pubsub://')
+queue = Celery('tasks', broker='gcloud://', backend='rpc://')
 
-# Configurar credenciales de autenticación para Google Cloud
-# Aquí asumimos que las credenciales se cargan de una variable de entorno,
-# pero podrían cargarse de otros medios como un archivo de configuración
-# o de un servicio de autenticación como Google Cloud SDK.
-import os
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/path/to/credentials.json"
+project_id = 'api-nube-semana-3'
+topic_name = 'my-topic'
+subscriber_name = 'my-subscriber'
+subscriber_max_messages = 10
 
-# Configurar el identificador del proyecto
-project_id = "my-project-id"
+publisher = pubsub_v1.PublisherClient()
+topic_path = publisher.topic_path(project_id, topic_name)
 
-# Configurar el nombre del tema de Pub/Sub
-topic_name = "my-topic-name"
+subscriber = pubsub_v1.SubscriberClient()
+subscription_path = subscriber.subscription_path(project_id, subscriber_name)
 
-# Configurar el identificador de la suscripción a Pub/Sub
-subscription_name = "my-subscription-name"
+# Crear la suscripción si no existe
+subscriber.create_subscription(request={"name": subscription_path, "topic": topic_path})
 
-# Configurar el cliente de Pub/Sub
-publisher_client = pubsub_v1.PublisherClient()
-subscriber_client = pubsub_v1.SubscriberClient()
-
-# Configurar el tema de Pub/Sub
-topic_path = publisher_client.topic_path(project_id, topic_name)
-
-# Configurar la suscripción a Pub/Sub
-subscription_path = subscriber_client.subscription_path(
-    project_id, subscription_name
-)
 
 @queue.task(name="queque_envio")
 def enviar_accion(id, new_format):
