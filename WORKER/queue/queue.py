@@ -3,15 +3,42 @@ import shutil
 import tarfile
 import zipfile
 import py7zr
-from celery import Celery
 from flask import make_response
-
+from google.cloud import pubsub_v1
 from ..modelos import Tarea
 from ..app import db
+from celery import Celery
 from celery.signals import task_postrun
 
-queue = Celery('tasks', broker='redis://10.128.0.6:6379/0')
+queue = Celery('tasks', broker='google-cloud-pubsub://')
 
+# Configurar credenciales de autenticación para Google Cloud
+# Aquí asumimos que las credenciales se cargan de una variable de entorno,
+# pero podrían cargarse de otros medios como un archivo de configuración
+# o de un servicio de autenticación como Google Cloud SDK.
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/path/to/credentials.json"
+
+# Configurar el identificador del proyecto
+project_id = "my-project-id"
+
+# Configurar el nombre del tema de Pub/Sub
+topic_name = "my-topic-name"
+
+# Configurar el identificador de la suscripción a Pub/Sub
+subscription_name = "my-subscription-name"
+
+# Configurar el cliente de Pub/Sub
+publisher_client = pubsub_v1.PublisherClient()
+subscriber_client = pubsub_v1.SubscriberClient()
+
+# Configurar el tema de Pub/Sub
+topic_path = publisher_client.topic_path(project_id, topic_name)
+
+# Configurar la suscripción a Pub/Sub
+subscription_path = subscriber_client.subscription_path(
+    project_id, subscription_name
+)
 
 @queue.task(name="queque_envio")
 def enviar_accion(id, new_format):
