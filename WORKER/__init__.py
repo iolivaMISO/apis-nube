@@ -1,6 +1,6 @@
 from flask import Flask
 
-IP = '35.224.134.68'
+IP = '10.188.0.4'
 
 
 def create_app(config_name):
