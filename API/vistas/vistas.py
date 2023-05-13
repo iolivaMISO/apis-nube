@@ -17,17 +17,8 @@ from google.cloud import pubsub_v1
 import json
 
 
-queque = Celery(__name__)
-
-# Conexión a Pub/Sub de Google Cloud
-project_id = "my-project-id"
-topic_id = "my-topic-id"
-subscriber_id = "my-subscriber-id"
-subscriber_url = f"projects/{project_id}/subscriptions/{subscriber_id}"
-publisher = pubsub_v1.PublisherClient()
-topic_path = publisher.topic_path(project_id, topic_id)
-subscriber = pubsub_v1.SubscriberClient()
-subscription_path = subscriber.subscription_path(project_id, subscriber_id)
+queue = pubsub_v1.PublisherClient()
+topic_path = queue.topic_path('api-nube-semana-3', 'my-topic')
 
 @queque.task(name="queque_envio")
 def enviar_accion(id, new_format):
