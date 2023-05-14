@@ -25,7 +25,7 @@ subscriber = pubsub_v1.SubscriberClient()
 subscription_path = subscriber.subscription_path(project_id, subscriber_name)
 
 # Crear la suscripción si no existe
-subscriber.create_subscription(request={"name": subscription_path, "topic": topic_path})
+#subscriber.create_subscription(request={"name": subscription_path, "topic": topic_path})
 
 
 @queue.task(name="queque_envio")
