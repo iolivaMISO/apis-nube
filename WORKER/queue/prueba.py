@@ -21,10 +21,10 @@ topic_path = f"projects/{project_id}/topics/{topic_name}"
 def callback(message):
     print("calbackkkkk")
     print(f"Mensaje recibido: {message.data.decode()}")
-    print("Legoooooooooooooooooooo "+str(message.data))
+    print("Legoooooooooooooooooooo "+str(message.data.decode()))
     print(message.data)
     # Realiza cualquier procesamiento adicional que desees hacer con el mensaje aquí
-    data = str(message.data).split(",")
+    data = str(message.data.decode()).split(",")
     print(data[0])
     print(data[1])
     enviar_accion(data[0], data[1])
