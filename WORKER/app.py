@@ -132,6 +132,7 @@ def enviar_accion(id, new_format):
 def callback(message):
     with app.app_context():
         print("calbackkkkk")
+        message.ack()
         print(f"Mensaje recibido: {message.data.decode()}")
         print("Legoooooooooooooooooooo " + str(message.data.decode()))
         print(message.data)
