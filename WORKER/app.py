@@ -109,6 +109,9 @@ def get_file_by_id_task(id_task):
 
 
 def process_to_convert(new_format, nueva_tarea_id):
+    print("process_to_convert !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print(nueva_tarea_id)
+    print(new_format)
     file = get_file_by_id_task(nueva_tarea_id)
     if new_format.upper() == 'TAR.GZ':
         convert_file_tar_gz(nueva_tarea_id, file)
