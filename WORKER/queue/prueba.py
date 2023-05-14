@@ -24,7 +24,7 @@ def callback(message):
     print("Legoooooooooooooooooooo "+str(message.data))
     print(message.data)
     # Realiza cualquier procesamiento adicional que desees hacer con el mensaje aquí
-    data = message.data.split(",")
+    data = str(message.data).split(",")
     print(data[0])
     print(data[1])
     enviar_accion(data[0], data[1])
