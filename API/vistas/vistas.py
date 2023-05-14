@@ -153,7 +153,7 @@ class VistaTasks(Resource):
             nueva_tarea.file_path_converted = file_path_converted
             db.session.commit()
            # enviar_accion.apply_async((nueva_tarea.id, new_format))
-            message = concat(str(nueva_tarea.id) +","+new_format)
+            message = str(nueva_tarea.id) + "," + new_format
             self.publish_message(message)
         return {"mensaje": "procesado con éxito"}
     def publish_message(message):
