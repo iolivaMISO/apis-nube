@@ -1,7 +1,7 @@
 from flask import Flask
 
 from . import create_app
-from .modelos import db
+from .queue import db
 
 app = create_app('default')
 app_context = app.app_context()
