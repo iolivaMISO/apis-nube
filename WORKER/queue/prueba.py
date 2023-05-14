@@ -6,7 +6,6 @@ import py7zr
 from celery import Celery
 from flask import make_response
 
-
 from celery.signals import task_postrun
 from google.cloud import pubsub_v1
 
@@ -25,7 +24,7 @@ def callback(message):
     data = message.data.split(",")
     print(data[0])
     print(data[1])
-    # enviar_accion(data[0], data[1])
+    enviar_accion(data[0], data[1])
     message.ack()  # Confirma la recepción del mensaje
 
 
@@ -48,6 +47,15 @@ def subscribe():
 
 
 subscribe()
+
+
+def enviar_accion(id, new_format):
+    process_to_convert(new_format, id)
+    actualizacion_tarea = Tarea.query.filter(Tarea.id == id).first()
+    actualizacion_tarea.status = "processed"
+    db.session.add(actualizacion_tarea)
+    db.session.commit()
+
 
 @task_postrun.connect
 def close_session(*args, **kwargs):
