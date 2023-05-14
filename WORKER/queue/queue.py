@@ -9,18 +9,43 @@ from flask import make_response
 from ..modelos import Tarea
 from ..app import db
 from celery.signals import task_postrun
+from google.cloud import pubsub_v1
 
-queue = Celery('tasks', broker='redis://10.128.0.6:6379/0')
+project_id = 'api-nube-semana-3'
+topic_name = 'my-topic'
+subscriber_name = 'my-subscriber'
+topic_path = f"projects/{project_id}/topics/{topic_name}"
 
 
-@queue.task(name="queque_envio")
-def enviar_accion(id, new_format):
-    process_to_convert(new_format, id)
-    actualizacion_tarea = Tarea.query.filter(Tarea.id == id).first()
-    actualizacion_tarea.status = "processed"
-    db.session.add(actualizacion_tarea)
-    db.session.commit()
+def callback(message):
+    print(f"Mensaje recibido: {message.data.decode()}")
+    # Realiza cualquier procesamiento adicional que desees hacer con el mensaje aquí
+    data = message.data.split(",")
+    print(data[0])
+    print(data[1])
+    # enviar_accion(data[0], data[1])
+    message.ack()  # Confirma la recepción del mensaje
 
+
+def subscribe():
+    # Crea un cliente de Pub/Sub
+    subscriber = pubsub_v1.SubscriberClient()
+
+    # Crea el nombre completo de la suscripción
+    subscription_path = f"projects/{project_id}/subscriptions/{subscriber_name}"
+
+    # Inicia la suscripción y especifica la función de devolución de llamada
+    streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
+
+    # Espera a que la suscripción se mantenga activa
+    try:
+        streaming_pull_future.result()
+    except Exception as e:
+        streaming_pull_future.cancel()
+        raise
+
+
+subscribe()
 
 @task_postrun.connect
 def close_session(*args, **kwargs):
