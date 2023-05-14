@@ -5,7 +5,6 @@ from sqlalchemy import LargeBinary
 db = SQLAlchemy()
 
 
-
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64))
@@ -24,6 +23,3 @@ class Tarea(db.Model):
     new_format = db.Column(db.String(128))
     status = db.Column(db.String(128), default="uploaded")
     usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'))
-
-
-
