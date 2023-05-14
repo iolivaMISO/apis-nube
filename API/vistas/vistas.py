@@ -20,10 +20,11 @@ import json
 queue = pubsub_v1.PublisherClient()
 topic_path = queue.topic_path('api-nube-semana-3', 'my-topic')
 
-@queque.task(name="queque_envio")
-def enviar_accion(id, new_format):
-    pass
-
+#@queque.task(name="queque_envio")
+#def enviar_accion(id, new_format):
+#    pass
+project_id = 'api-nube-semana-3'
+topic_id = 'my-topic'
 
 ALLOWED_EXTENSIONS = {'ZIP', '7Z', 'TAR.GZ', 'TAR.BZ2'}
 ROOT_PATH = '/nfs/apis_nube'
@@ -151,9 +152,25 @@ class VistaTasks(Resource):
             nueva_tarea.file_path = file_path
             nueva_tarea.file_path_converted = file_path_converted
             db.session.commit()
-            enviar_accion.apply_async((nueva_tarea.id, new_format))
+           # enviar_accion.apply_async((nueva_tarea.id, new_format))
+            message = concat(nueva_tarea.id +","+new_format)
+            self.publish_message(message)
         return {"mensaje": "procesado con éxito"}
+    def publish_message(message):
+        # Crea un cliente de Pub/Sub
+        publisher = pubsub_v1.PublisherClient()
 
+        # Forma el nombre completo del tema
+        topic_path = publisher.topic_path(project_id, topic_id)
+
+        # Convierte el mensaje en bytes
+        data = message.encode('utf-8')
+
+        # Publica el mensaje en el tema
+        future = publisher.publish(topic_path, data)
+
+        # Espera a que se complete la publicación del mensaje
+        future.result()
 
 class VistaFiles(Resource):
     @jwt_required()
