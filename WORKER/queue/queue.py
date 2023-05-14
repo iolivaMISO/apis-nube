@@ -11,7 +11,7 @@ from ..modelos import Tarea
 from ..app import db
 from celery.signals import task_postrun
 
-queue = Celery('tasks', broker='gcloud://', backend='rpc://')
+queue = Celery('tasks', broker='pubsub://', backend='rpc://')
 
 project_id = 'api-nube-semana-3'
 topic_name = 'my-topic'
