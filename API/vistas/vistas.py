@@ -154,7 +154,7 @@ class VistaTasks(Resource):
             db.session.commit()
            # enviar_accion.apply_async((nueva_tarea.id, new_format))
             message = str(nueva_tarea.id) + "," + new_format
-            self.publish_message(message)
+            self.publish_message("hola desde la vista")
         return {"mensaje": "procesado con éxito"}
     def publish_message(message):
         # Crea un cliente de Pub/Sub
