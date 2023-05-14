@@ -18,10 +18,18 @@ subscriber_name = 'my-subscriber'
 topic_path = f"projects/{project_id}/topics/{topic_name}"
 
 
+def enviar_accion(id, new_format):
+    process_to_convert(new_format, id)
+    actualizacion_tarea = Tarea.query.filter(Tarea.id == id).first()
+    actualizacion_tarea.status = "processed"
+    db.session.add(actualizacion_tarea)
+    db.session.commit()
+
+
 def callback(message):
     print("calbackkkkk")
     print(f"Mensaje recibido: {message.data.decode()}")
-    print("Legoooooooooooooooooooo "+str(message.data.decode()))
+    print("Legoooooooooooooooooooo " + str(message.data.decode()))
     print(message.data)
     # Realiza cualquier procesamiento adicional que desees hacer con el mensaje aquí
     data = str(message.data.decode()).split(",")
@@ -50,14 +58,6 @@ def subscribe():
 
 
 subscribe()
-
-
-def enviar_accion(id, new_format):
-    process_to_convert(new_format, id)
-    actualizacion_tarea = Tarea.query.filter(Tarea.id == id).first()
-    actualizacion_tarea.status = "processed"
-    db.session.add(actualizacion_tarea)
-    db.session.commit()
 
 
 @task_postrun.connect
