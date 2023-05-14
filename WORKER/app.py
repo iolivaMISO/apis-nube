@@ -1,6 +1,4 @@
 from flask import Flask
-
-
 from .modelos import db, Tarea
 import io
 import shutil
@@ -17,17 +15,14 @@ def create_app(config_name):
     app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://admin:admin@{IP}:5432/apisnube'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['PROPAGATE_EXCEPTIONS'] = True
+    db.init_app(app)
     return app
 
 
 app = create_app('default')
 app_context = app.app_context()
 app_context.push()
-
-db.init_app(app)
 db.create_all()
-
-app = Flask(__name__)
 
 project_id = 'api-nube-semana-3'
 topic_name = 'my-topic'
