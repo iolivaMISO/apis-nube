@@ -6,7 +6,7 @@ import zipfile
 from google.cloud import pubsub_v1
 from py7zr import py7zr
 
-from WORKER.queue import Tarea, db
+from WORKER.modelos import Tarea, db
 
 project_id = 'api-nube-semana-3'
 topic_name = 'my-topic'
@@ -61,7 +61,6 @@ def process_to_convert(new_format, nueva_tarea_id):
         convert_file_7z(nueva_tarea_id, file)
     elif new_format.upper() == 'TAR.BZ2':
         convert_file_tar_bz2(nueva_tarea_id, file)
-
 
 def get_file_by_id_task(id_task):
     tarea = Tarea.query.get_or_404(id_task)
