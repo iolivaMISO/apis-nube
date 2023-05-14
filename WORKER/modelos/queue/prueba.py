@@ -10,7 +10,7 @@ from flask import make_response
 from celery.signals import task_postrun
 from google.cloud import pubsub_v1
 
-from WORKER.modelos import Tarea, db
+from WORKER.modelos import Tarea
 
 project_id = 'api-nube-semana-3'
 topic_name = 'my-topic'
