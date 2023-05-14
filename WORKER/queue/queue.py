@@ -51,7 +51,7 @@ with pubsub_v1.SubscriberClient() as subscriber:
         name=subscription_name, topic=topic_name)
     future = subscriber.subscribe(subscription_name, callback)
     try:
-        print ("despues del print ",future.result())
+        future.result()
     except Exception as e:
         future.cancel()
         raise
