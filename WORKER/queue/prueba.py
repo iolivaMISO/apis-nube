@@ -2,34 +2,55 @@ import io
 import shutil
 import tarfile
 import zipfile
-import py7zr
-from celery import Celery
+
 from google.cloud import pubsub_v1
-from flask import make_response
+from py7zr import py7zr
 
-from ..modelos import Tarea
-from ..app import db
-from celery.signals import task_postrun
+from WORKER.modelos import Tarea, db
 
-import os
-from google.cloud import pubsub_v1
-
-
-queue = Celery('tasks', broker='pubsub://', backend='rpc://')
-
-# def enviar_accion():
-#
-#
-#     process_to_convert(new_format, id)
-#     actualizacion_tarea = Tarea.query.filter(Tarea.id == id).first()
-#     actualizacion_tarea.status = "processed"
-#     db.session.add(actualizacion_tarea)
-#     db.session.commit()
+project_id = 'api-nube-semana-3'
+topic_name = 'my-topic'
+subscriber_name = 'my-subscriber'
+topic_path = f"projects/{project_id}/topics/{topic_name}"
 
 
-@task_postrun.connect
-def close_session(*args, **kwargs):
-    db.session.remove()
+def callback(message):
+    print(f"Mensaje recibido: {message.data.decode()}")
+    # Realiza cualquier procesamiento adicional que desees hacer con el mensaje aquí
+    data = message.data.split(",")
+    print(data[0])
+    print(data[1])
+    enviar_accion(data[0], data[1])
+    message.ack()  # Confirma la recepción del mensaje
+
+
+def subscribe():
+    # Crea un cliente de Pub/Sub
+    subscriber = pubsub_v1.SubscriberClient()
+
+    # Crea el nombre completo de la suscripción
+    subscription_path = f"projects/{project_id}/subscriptions/{subscriber_name}"
+
+    # Inicia la suscripción y especifica la función de devolución de llamada
+    streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
+
+    # Espera a que la suscripción se mantenga activa
+    try:
+        streaming_pull_future.result()
+    except Exception as e:
+        streaming_pull_future.cancel()
+        raise
+
+
+subscribe()
+
+
+def enviar_accion(new_format, identifier):
+    process_to_convert(new_format, identifier)
+    actualizacion_tarea = Tarea.query.filter(Tarea.id == identifier).first()
+    actualizacion_tarea.status = "processed"
+    db.session.add(actualizacion_tarea)
+    db.session.commit()
 
 
 def process_to_convert(new_format, nueva_tarea_id):
