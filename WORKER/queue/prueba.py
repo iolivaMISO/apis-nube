@@ -19,6 +19,7 @@ topic_path = f"projects/{project_id}/topics/{topic_name}"
 
 
 def callback(message):
+    print("calbackkkkk")
     print(f"Mensaje recibido: {message.data.decode()}")
     print("Legoooooooooooooooooooo "+str(message.data))
     print(message.data)
