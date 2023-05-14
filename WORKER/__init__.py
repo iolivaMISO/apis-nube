@@ -1,6 +1,4 @@
 from flask import Flask
-from prueba import *
-from modelos import *
 
 IP = '10.188.0.4'
 
