@@ -20,6 +20,8 @@ topic_path = f"projects/{project_id}/topics/{topic_name}"
 
 def callback(message):
     print(f"Mensaje recibido: {message.data.decode()}")
+    print("Legoooooooooooooooooooo "+str(message.data))
+    print(message.data)
     # Realiza cualquier procesamiento adicional que desees hacer con el mensaje aquí
     data = message.data.split(",")
     print(data[0])
