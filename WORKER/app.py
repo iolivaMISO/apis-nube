@@ -1,6 +1,6 @@
 from flask import Flask
 
-from . import create_app
+
 from .modelos import db, Tarea
 import io
 import shutil
@@ -8,6 +8,17 @@ import tarfile
 import zipfile
 import py7zr
 from google.cloud import pubsub_v1
+
+IP = '10.188.0.4'
+
+
+def create_app(config_name):
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://admin:admin@{IP}:5432/apisnube'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['PROPAGATE_EXCEPTIONS'] = True
+    return app
+
 
 app = create_app('default')
 app_context = app.app_context()
@@ -18,11 +29,11 @@ db.create_all()
 
 app = Flask(__name__)
 
-
 project_id = 'api-nube-semana-3'
 topic_name = 'my-topic'
 subscriber_name = 'my-subscriber'
 topic_path = f"projects/{project_id}/topics/{topic_name}"
+
 
 def convert_file_tar_gz(id_task, file):
     tarea = Tarea.query.get_or_404(id_task)
@@ -94,11 +105,13 @@ def convert_file_7z(id_task, file):
     # delete the temporary directory
     shutil.rmtree(tmp_dir)
 
+
 def get_file_by_id_task(id_task):
     tarea = Tarea.query.get_or_404(id_task)
 
     with open(tarea.file_path, 'rb') as file:
         return io.BytesIO(file.read())
+
 
 def process_to_convert(new_format, nueva_tarea_id):
     file = get_file_by_id_task(nueva_tarea_id)
@@ -148,5 +161,6 @@ def subscribe():
     except Exception as e:
         streaming_pull_future.cancel()
         raise
+
 
 subscribe()
