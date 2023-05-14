@@ -1,21 +1,9 @@
-
 from google.cloud import pubsub_v1
 
 project_id = 'api-nube-semana-3'
 topic_name = 'my-topic'
 subscriber_name = 'my-subscriber'
-topic_path = f"projects/{project_id}/topics/{subscriber_name}"
-
-topic_name = 'projects/'+ project_id +'/topics/'+topic_name.format(
-    project_id=project_id,
-    topic=topic_name,  # Set this to something appropriate.
-)
-subscription_name = 'projects/'+ project_id +'/subscriptions/'+subscriber_name.format(
-    project_id=project_id,
-    sub=subscriber_name,  # Set this to something appropriate.
-)
-
-
+topic_path = f"projects/{project_id}/topics/{topic_name}"
 
 def callback(message):
     print(f"Mensaje recibido: {message.data.decode()}")
@@ -29,7 +17,7 @@ def subscribe():
     subscriber = pubsub_v1.SubscriberClient()
 
     # Crea el nombre completo de la suscripción
-    subscription_path = subscriber.subscription_path(topic_path, subscriber_name)
+    subscription_path = f"projects/{project_id}/subscriptions/{subscriber_name}"
 
     # Inicia la suscripción y especifica la función de devolución de llamada
     streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
