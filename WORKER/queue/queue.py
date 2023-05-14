@@ -16,7 +16,7 @@ queue = Celery('tasks', broker='amqp://guest@localhost//', backend='rpc://')
 project_id = 'api-nube-semana-3'
 topic_name = 'my-topic'
 subscriber_name = 'my-subscriber'
-subscriber_max_messages = 10
+#subscriber_max_messages = 10
 
 publisher = pubsub_v1.PublisherClient()
 topic_path = publisher.topic_path(project_id, topic_name)
