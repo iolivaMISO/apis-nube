@@ -6,7 +6,8 @@ import zipfile
 from google.cloud import pubsub_v1
 from py7zr import py7zr
 
-from WORKER.modelos import Tarea, db
+from ..app import db
+from ..modelos import Tarea
 
 project_id = 'api-nube-semana-3'
 topic_name = 'my-topic'
