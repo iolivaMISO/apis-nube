@@ -119,16 +119,17 @@ def enviar_accion(id, new_format):
 
 
 def callback(message):
-    print("calbackkkkk")
-    print(f"Mensaje recibido: {message.data.decode()}")
-    print("Legoooooooooooooooooooo " + str(message.data.decode()))
-    print(message.data)
-    # Realiza cualquier procesamiento adicional que desees hacer con el mensaje aquí
-    data = str(message.data.decode()).split(",")
-    print(data[0])
-    print(data[1])
-    enviar_accion(data[0], data[1])
-    message.ack()  # Confirma la recepción del mensaje
+    with app.app_context():
+        print("calbackkkkk")
+        print(f"Mensaje recibido: {message.data.decode()}")
+        print("Legoooooooooooooooooooo " + str(message.data.decode()))
+        print(message.data)
+        # Realiza cualquier procesamiento adicional que desees hacer con el mensaje aquí
+        data = str(message.data.decode()).split(",")
+        print(data[0])
+        print(data[1])
+        enviar_accion(data[0], data[1])
+        message.ack()  # Confirma la recepción del mensaje
 
 
 def subscribe():
