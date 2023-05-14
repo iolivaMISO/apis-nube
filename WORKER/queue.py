@@ -7,8 +7,8 @@ from celery import Celery
 from google.cloud import pubsub_v1
 from flask import make_response
 
-from ..modelos import Tarea
-from ..app import db
+from WORKER.modelos import Tarea
+from WORKER.app import db
 from celery.signals import task_postrun
 
 import os
