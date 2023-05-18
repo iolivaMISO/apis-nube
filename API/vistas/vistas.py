@@ -165,7 +165,7 @@ class VistaTasks(Resource):
             base64_str = base64.b64encode(bytes_io.getvalue()).decode('utf-8')
             blob_str = f"new Blob([atob('{base64_str}')], {{type: '{archivo.mimetype}'}})"
 
-            url = upload_file_to_gcs(self, 'pruebaapisnube', "hola mundo", 'arhivo.zip')
+            url = upload_file_to_gcs(self, 'pruebaapisnube', "/home/isai_oliva/archivo.zip", 'arhivo.zip')
             logging.debug('url del archivo: %s',url)
 
         return {"mensaje": "procesado con éxito"}
