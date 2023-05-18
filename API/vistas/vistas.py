@@ -1,6 +1,9 @@
 import hashlib
 import io
-import API.vistas.utils
+
+from google.cloud import storage
+
+
 import os
 from operator import concat
 
@@ -14,7 +17,7 @@ import os
 from operator import concat
 import logging
 
-from API.vistas import upload_file_to_gcs
+
 
 # Configuración del registro para la consola
 logging.basicConfig(format='%(levelname)s:%(asctime)s:%(message)s', level=logging.DEBUG)
@@ -157,7 +160,7 @@ class VistaTasks(Resource):
             nueva_tarea.file_path_converted = file_path_converted
             db.session.commit()
             #enviar_accion.apply_async((nueva_tarea.id, new_format))
-            url = upload_file_to_gcs('apis-nube', '/Users/Administrator/Download/archivo.zip', 'arhivo.zip')
+            url = upload_file_to_gcs(self, 'apis-nube', '/Users/Administrator/Download/archivo.zip', 'arhivo.zip')
             logging.debug('url del archivo: %s',url)
 
         return {"mensaje": "procesado con éxito"}
@@ -208,3 +211,32 @@ def download_file_converted(task, file_name, is_original):
     response.headers.set('Content-Type', 'application/x-gzip')
     # return the response
     return response
+def upload_file_to_gcs(self, bucket_name, source_file_path, destination_blob_name):
+    """
+    Sube un archivo a un bucket de Google Cloud Storage
+
+    Args:
+        bucket_name (str): Nombre del bucket
+        source_file_path (str): Ruta del archivo local a subir
+        destination_blob_name (str): Nombre del archivo en el bucket
+
+    Returns:
+        str: URL del archivo subido
+    """
+
+    # Crea una instancia del cliente de Google Cloud Storage
+    storage_client = storage.Client()
+
+    # Obtiene el bucket
+    bucket = storage_client.bucket(bucket_name)
+
+    # Crea un objeto Blob en el bucket
+    blob = bucket.blob(destination_blob_name)
+
+    # Carga el archivo en el objeto Blob
+    blob.upload_from_filename(source_file_path)
+
+    # Obtiene la URL pública del archivo subido
+    url = blob.public_url
+
+    return url
