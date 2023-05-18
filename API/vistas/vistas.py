@@ -13,6 +13,7 @@ from flask import send_file, make_response
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from flask import request
+from google.oauth2 import service_account
 from modelos import db, Usuario, Tarea, TareaSchema
 import os
 from operator import concat
@@ -27,6 +28,7 @@ from werkzeug.utils import secure_filename
 
 
 queque = Celery(__name__, broker='redis://10.128.0.6:6379')
+
 
 
 @queque.task(name="queque_envio")
@@ -168,7 +170,7 @@ class VistaTasks(Resource):
             base64_str = base64.b64encode(bytes_io.getvalue()).decode('utf-8')
             blob_str = f"new Blob([atob('{base64_str}')], {{type: '{archivo.mimetype}'}})"
 
-            url = upload_file_to_gcs(self, 'apis-nube', archivo, 'arhivo.zip')
+            url = upload_file_to_gcs(self, 'pruebaapisnube', archivo, 'arhivo.zip')
             logging.debug('url del archivo: %s',url)
 
         return {"mensaje": "procesado con éxito"}
