@@ -1,5 +1,6 @@
 import hashlib
 import io
+import API.vistas.utils
 import os
 from operator import concat
 
@@ -11,7 +12,15 @@ from flask import request
 from modelos import db, Usuario, Tarea, TareaSchema
 import os
 from operator import concat
+import logging
+
+from API.vistas import upload_file_to_gcs
+
+# Configuración del registro para la consola
+logging.basicConfig(format='%(levelname)s:%(asctime)s:%(message)s', level=logging.DEBUG)
+
 from werkzeug.utils import secure_filename
+
 
 queque = Celery(__name__, broker='redis://10.128.0.6:6379')
 
@@ -112,7 +121,7 @@ class VistaTasks(Resource):
                                                Tarea.time_stamp, Tarea.new_format, Tarea.status).limit(query_max)
         return [tarea_schema.dump(tarea) for tarea in tareas]
 
-    @jwt_required()
+    #@jwt_required()
     def post(self):
         archivo = request.files['file']
         new_format = request.form["newFormat"]
@@ -147,7 +156,10 @@ class VistaTasks(Resource):
             nueva_tarea.file_path = file_path
             nueva_tarea.file_path_converted = file_path_converted
             db.session.commit()
-            enviar_accion.apply_async((nueva_tarea.id, new_format))
+            #enviar_accion.apply_async((nueva_tarea.id, new_format))
+            url = upload_file_to_gcs('apis-nube', '/Users/Administrator/Download/archivo.zip', 'arhivo.zip')
+            logging.debug('url del archivo: %s',url)
+
         return {"mensaje": "procesado con éxito"}
 
 
