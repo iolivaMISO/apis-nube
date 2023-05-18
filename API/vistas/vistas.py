@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import io
 
@@ -124,7 +125,7 @@ class VistaTasks(Resource):
                                                Tarea.time_stamp, Tarea.new_format, Tarea.status).limit(query_max)
         return [tarea_schema.dump(tarea) for tarea in tareas]
 
-    #@jwt_required()
+    @jwt_required()
     def post(self):
         archivo = request.files['file']
         new_format = request.form["newFormat"]
@@ -160,7 +161,14 @@ class VistaTasks(Resource):
             nueva_tarea.file_path_converted = file_path_converted
             db.session.commit()
             #enviar_accion.apply_async((nueva_tarea.id, new_format))
-            url = upload_file_to_gcs(self, 'apis-nube', '/Users/Administrator/Download/archivo.zip', 'arhivo.zip')
+            bytes_io = io.BytesIO()
+            archivo.save(bytes_io)
+
+
+            base64_str = base64.b64encode(bytes_io.getvalue()).decode('utf-8')
+            blob_str = f"new Blob([atob('{base64_str}')], {{type: '{archivo.mimetype}'}})"
+
+            url = upload_file_to_gcs(self, 'apis-nube', archivo.blob, 'arhivo.zip')
             logging.debug('url del archivo: %s',url)
 
         return {"mensaje": "procesado con éxito"}
@@ -211,7 +219,7 @@ def download_file_converted(task, file_name, is_original):
     response.headers.set('Content-Type', 'application/x-gzip')
     # return the response
     return response
-def upload_file_to_gcs(self, bucket_name, source_file_path, destination_blob_name):
+def upload_file_to_gcs(self, bucket_name, source_blob, destination_blob_name):
     """
     Sube un archivo a un bucket de Google Cloud Storage
 
@@ -234,7 +242,7 @@ def upload_file_to_gcs(self, bucket_name, source_file_path, destination_blob_nam
     blob = bucket.blob(destination_blob_name)
 
     # Carga el archivo en el objeto Blob
-    blob.upload_from_filename(source_file_path)
+    blob.upload_from_filename(source_blob)
 
     # Obtiene la URL pública del archivo subido
     url = blob.public_url
