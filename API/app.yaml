@@ -1,4 +1,4 @@
-runtime: python27
+runtime: python
 env: flex
 entrypoint: gunicorn -b :5000 main:app
 runtime_config:
