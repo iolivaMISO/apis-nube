@@ -54,7 +54,7 @@ requests==2.30.0
 rsa==4.9
 six==1.16.0
 soupsieve==2.4.1
-SQLAlchemy==2.0.13
+SQLAlchemy==1.4.48
 storage==0.0.4.3
 typing_extensions==4.5.0
 urllib3==1.26.15

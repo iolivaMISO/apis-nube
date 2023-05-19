@@ -3,7 +3,7 @@ import io
 import os
 from operator import concat
 
-from celery import Celery
+
 from flask import send_file, make_response
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
@@ -13,12 +13,8 @@ import os
 from operator import concat
 from werkzeug.utils import secure_filename
 
-queque = Celery(__name__, broker='redis://10.128.0.6:6379')
 
 
-@queque.task(name="queque_envio")
-def enviar_accion(id, new_format):
-    pass
 
 
 ALLOWED_EXTENSIONS = {'ZIP', '7Z', 'TAR.GZ', 'TAR.BZ2'}
