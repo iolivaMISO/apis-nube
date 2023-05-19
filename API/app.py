@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
+from flask_restful import Resource
 from flask_restful import Api
 from vistas import VistaSignup, VistaLogin, VistaFiles, VistaTask, VistaTasks, VistaFile
 from modelos import db
@@ -21,6 +22,13 @@ db.init_app(app)
 db.create_all()
 
 api = Api(app)
+
+class HelloWorld(Resource):
+    def get(self):
+        return {'hello': 'world'}
+
+
+api.add_resource(HelloWorld, '/')
 
 api.add_resource(VistaSignup, '/api/auth/signup')
 api.add_resource(VistaLogin, '/api/auth/login')
