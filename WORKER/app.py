@@ -63,6 +63,7 @@ def download_file_from_gcs(blob_name):
 
     # Crea un archivo temporal para guardar la descarga
     temp_dir = tempfile.gettempdir()
+    logging.debug("TEMPORALLLLL ****************************"+temp_dir)
     destination_file_path = os.path.join(temp_dir, blob_name)
 
     # Descarga el archivo en el objeto Blob al archivo local
@@ -163,10 +164,7 @@ def process_to_convert(new_format, file_name):
 
 def enviar_accion(file_name, format_to_convert, file_id):
     process_to_convert(format_to_convert, file_name)
-    # actualizacion_tarea = Tarea.query.filter(Tarea.id == id).first()
-    # actualizacion_tarea.status = "processed"
-    # db.session.add(actualizacion_tarea)
-    # db.session.commit()
+
 
 
 def callback(message):
