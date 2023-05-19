@@ -6,6 +6,8 @@ import uuid
 
 from google.cloud import storage
 from google.cloud import pubsub_v1
+from google.api_core.exceptions import GoogleAPICallError
+from google.cloud import exceptions
 
 from flask import send_file, make_response
 from flask_restful import Resource
@@ -29,6 +31,7 @@ queue = pubsub_v1.PublisherClient()
 topic_path = queue.topic_path('api-nube-semana-3', 'my-topic')
 project_id = 'api-nube-semana-3'
 topic_id = 'my-topic'
+max_retries = 3
 
 
 class VistaSignup(Resource):
@@ -148,22 +151,22 @@ class VistaTasks(Resource):
                 file_path = os.path.join(temp_dir, filename)
                 file_path_converted = os.path.join(temp_dir, file_name_converted)
                 archivo.save(file_path)
-
                 nueva_tarea.file_path = file_path
-                nueva_tarea.file_path_converted = file_path_converted
-                db.session.commit()
 
                 bytes_io = io.BytesIO()
                 archivo.save(bytes_io)
 
                 id_file = 'archivo' + str(uuid.uuid4())
                 url = upload_file_to_gcs(self, 'pruebaapisnube', file_path, id_file)
-                logging.debug('url del archivo: %s', url)
-                # Eliminar el archivo de la carpeta temporal
-                os.remove(file_path)
-                # Enviar mensaje a pub/sub
-                message = id_file + "," + new_format
-                self.publish_message(message)
+                if url:
+                    nueva_tarea.file_path_converted = url
+                    logging.debug('url del archivo: %s', str(url))
+                    # Eliminar el archivo de la carpeta temporal
+                    os.remove(file_path)
+                    # Enviar mensaje a pub/sub
+                    message = id_file + "," + new_format
+                    self.publish_message(message)
+                db.session.commit()
         return {"mensaje": "procesado con éxito"}
 
     def publish_message(self, message):
@@ -230,7 +233,7 @@ def download_file_converted(task, file_name, is_original):
     return response
 
 
-def upload_file_to_gcs(self, bucket_name, source_blob, destination_blob_name):
+def upload_file_to_gcs(bucket_name, source_blob, destination_blob_name):
     """
     Sube un archivo a un bucket de Google Cloud Storage
 
@@ -238,9 +241,13 @@ def upload_file_to_gcs(self, bucket_name, source_blob, destination_blob_name):
         bucket_name (str): Nombre del bucket
         source_file_path (str): Ruta del archivo local a subir
         destination_blob_name (str): Nombre del archivo en el bucket
+        max_retries (int): Número máximo de intentos de carga (por defecto: 3)
 
     Returns:
         str: URL del archivo subido
+
+    Raises:
+        Exception: Si se produce un error al cargar el archivo en Google Cloud Storage
     """
 
     # Crea una instancia del cliente de Google Cloud Storage
@@ -254,10 +261,23 @@ def upload_file_to_gcs(self, bucket_name, source_blob, destination_blob_name):
 
     blob._properties["timeout"] = 600
 
-    # Carga el archivo en el objeto Blob
-    blob.upload_from_filename(source_blob)
+    # Intenta cargar el archivo con varios intentos
+    for attempt in range(max_retries):
+        try:
+            # Carga el archivo en el objeto Blob
+            blob.upload_from_filename(source_blob)
 
-    # Obtiene la URL pública del archivo subido
-    url = blob.public_url
+            # Obtiene la URL pública del archivo subido
+            url = blob.public_url
 
-    return url
+            return url
+        except (GoogleAPICallError, exceptions.GoogleCloudError, exceptions.RetryError) as e:
+            if attempt < max_retries - 1:
+                # En caso de error, se hace un nuevo intento
+                print(
+                    f"Error al cargar el archivo en Google Cloud Storage. Intento {attempt + 1}/{max_retries}. Error: {e}")
+            else:
+                logging.error(
+                    "Error al cargar el archivo en Google Cloud Storage. Se excedió el número máximo de intentos.")
+                # Si todos los intentos fallan, se lanza una excepción
+                return
