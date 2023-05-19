@@ -1,35 +1,23 @@
 import base64
 import hashlib
 import io
+import tempfile
+import uuid
 
 from google.cloud import storage
-
-
-import os
-from operator import concat
-
 
 from flask import send_file, make_response
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from flask import request
-from google.oauth2 import service_account
 from modelos import db, Usuario, Tarea, TareaSchema
 import os
-from operator import concat
 import logging
-
-
 
 # Configuración del registro para la consola
 logging.basicConfig(format='%(levelname)s:%(asctime)s:%(message)s', level=logging.DEBUG)
 
 from werkzeug.utils import secure_filename
-
-
-
-
-
 
 ALLOWED_EXTENSIONS = {'ZIP', '7Z', 'TAR.GZ', 'TAR.BZ2'}
 ROOT_PATH = '/nfs/apis_nube'
@@ -94,7 +82,8 @@ class VistaTask(Resource):
     @jwt_required()
     def get(self, id_task):
         return tarea_schema.dump(Tarea.query.with_entities(Tarea.id, Tarea.file_name, Tarea.file_name_converted,
-                                                           Tarea.time_stamp, Tarea.new_format, Tarea.status).filter(Tarea.id == id_task).first())
+                                                           Tarea.time_stamp, Tarea.new_format, Tarea.status).filter(
+            Tarea.id == id_task).first())
 
     @jwt_required()
     def delete(self, id_task):
@@ -116,11 +105,14 @@ class VistaTasks(Resource):
             return {"mensaje": "order debe ser numerico: 0 o 1"}, 400
         if (query_order == '1'):
             tareas = Tarea.query.with_entities(Tarea.id, Tarea.file_name, Tarea.file_name_converted,
-                                               Tarea.time_stamp, Tarea.new_format, Tarea.status).order_by(Tarea.id.desc()).limit(query_max)
+                                               Tarea.time_stamp, Tarea.new_format, Tarea.status).order_by(
+                Tarea.id.desc()).limit(query_max)
         else:
             tareas = Tarea.query.with_entities(Tarea.id, Tarea.file_name, Tarea.file_name_converted,
                                                Tarea.time_stamp, Tarea.new_format, Tarea.status).limit(query_max)
         return [tarea_schema.dump(tarea) for tarea in tareas]
+
+    import tempfile
 
     @jwt_required()
     def post(self):
@@ -130,43 +122,37 @@ class VistaTasks(Resource):
             return {"mensaje": "file no proporcionado"}
         if not allowed_file(archivo.filename):
             return {"mensaje": "file no soportado"}
+
         if archivo:
             filename = secure_filename(archivo.filename)
-            file_name_converted = os.path.splitext(filename)[
-                0] + '.' + new_format
-            current_user = Usuario.query.filter(
-                Usuario.username == get_jwt_identity()).first()
-            nueva_tarea = Tarea(file_name=filename.lower(),
-                                file_name_converted=file_name_converted.lower(),
-                                new_format=new_format,
-                                usuario=current_user.id,
-                                file_path='',
-                                file_path_converted=''
-                                )
+            file_name_converted = os.path.splitext(filename)[0] + '.' + new_format
+            current_user = Usuario.query.filter(Usuario.username == get_jwt_identity()).first()
+            nueva_tarea = Tarea(
+                file_name=filename.lower(),
+                file_name_converted=file_name_converted.lower(),
+                new_format=new_format,
+                usuario=current_user.id,
+                file_path='',
+                file_path_converted=''
+            )
             db.session.add(nueva_tarea)
             db.session.commit()
-            file_path = os.path.join(
-                ROOT_PATH, str(nueva_tarea.id), filename)
-            file_path_converted = os.path.join(
-                ROOT_PATH, str(nueva_tarea.id), file_name_converted)
-            
-            root_folder = os.path.dirname(file_path)
-            os.makedirs(root_folder, exist_ok=True)
-            archivo.save(file_path)
 
-            nueva_tarea.file_path = file_path
-            nueva_tarea.file_path_converted = file_path_converted
-            db.session.commit()
-            #enviar_accion.apply_async((nueva_tarea.id, new_format))
-            bytes_io = io.BytesIO()
-            archivo.save(bytes_io)
+            with tempfile.TemporaryDirectory() as temp_dir:
+                file_path = os.path.join(temp_dir, filename)
+                file_path_converted = os.path.join(temp_dir, file_name_converted)
+                archivo.save(file_path)
 
+                nueva_tarea.file_path = file_path
+                nueva_tarea.file_path_converted = file_path_converted
+                db.session.commit()
 
-            base64_str = base64.b64encode(bytes_io.getvalue()).decode('utf-8')
-            blob_str = f"new Blob([atob('{base64_str}')], {{type: '{archivo.mimetype}'}})"
+                bytes_io = io.BytesIO()
+                archivo.save(bytes_io)
 
-            url = upload_file_to_gcs(self, 'pruebaapisnube', "/home/isai_oliva/archivo.zip", 'arhivo.zip')
-            logging.debug('url del archivo: %s',url)
+                id_file = 'archivo' + str(uuid.uuid4())
+                url = upload_file_to_gcs(self, 'pruebaapisnube', file_path, id_file)
+                logging.debug('url del archivo: %s', url)
 
         return {"mensaje": "procesado con éxito"}
 
@@ -216,6 +202,8 @@ def download_file_converted(task, file_name, is_original):
     response.headers.set('Content-Type', 'application/x-gzip')
     # return the response
     return response
+
+
 def upload_file_to_gcs(self, bucket_name, source_blob, destination_blob_name):
     """
     Sube un archivo a un bucket de Google Cloud Storage
