@@ -13,6 +13,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'uniandes-cloud-class-2023'
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.debug = True
+
+
 
 app_context = app.app_context()
 app_context.push()
@@ -31,4 +34,9 @@ api.add_resource(VistaFile, '/api/files/<int:id_task>')
 
 jwt = JWTManager(app)
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=8000)
+	app.run(host='0.0.0.0', port=5000)
+
+
+
+
+
