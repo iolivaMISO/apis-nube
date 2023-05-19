@@ -6,6 +6,14 @@ import tarfile
 import zipfile
 import py7zr
 from google.cloud import pubsub_v1
+import logging
+from google.cloud import storage
+import os
+
+bucket_name = 'pruebaapisnube'
+
+# Configuración del registro para la consola
+logging.basicConfig(format='%(levelname)s:%(asctime)s:%(message)s', level=logging.DEBUG)
 
 IP = '10.188.0.4'
 
@@ -28,6 +36,39 @@ project_id = 'api-nube-semana-3'
 topic_name = 'my-topic'
 subscriber_name = 'my-subscriber'
 topic_path = f"projects/{project_id}/topics/{topic_name}"
+
+import tempfile
+
+
+def download_file_from_gcs(blob_name):
+    """
+    Descarga un archivo desde un bucket de Google Cloud Storage utilizando el nombre del archivo en el bucket.
+
+    Args:
+        bucket_name (str): Nombre del bucket
+        blob_name (str): Nombre del archivo en el bucket
+
+    Returns:
+        str: Ruta del archivo descargado
+    """
+
+    # Crea una instancia del cliente de Google Cloud Storage
+    storage_client = storage.Client()
+
+    # Obtiene el bucket
+    bucket = storage_client.bucket(bucket_name)
+
+    # Obtiene el objeto Blob
+    blob = bucket.blob(blob_name)
+
+    # Crea un archivo temporal para guardar la descarga
+    temp_dir = tempfile.gettempdir()
+    destination_file_path = os.path.join(temp_dir, blob_name)
+
+    # Descarga el archivo en el objeto Blob al archivo local
+    blob.download_to_filename(destination_file_path)
+
+    return destination_file_path
 
 
 def convert_file_tar_gz(id_task, file):
@@ -108,25 +149,24 @@ def get_file_by_id_task(id_task):
         return io.BytesIO(file.read())
 
 
-def process_to_convert(new_format, nueva_tarea_id):
-    print("process_to_convert !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print(nueva_tarea_id)
-    print(new_format)
-    file = get_file_by_id_task(nueva_tarea_id)
-    if new_format.upper() == 'TAR.GZ':
-        convert_file_tar_gz(nueva_tarea_id, file)
-    elif new_format.upper() == '7Z':
-        convert_file_7z(nueva_tarea_id, file)
-    elif new_format.upper() == 'TAR.BZ2':
-        convert_file_tar_bz2(nueva_tarea_id, file)
+def process_to_convert(new_format, file_name):
+    logging.debug("process_to_convert !!!!!!!!!!!!!!!!!!!!!!!!!!!!", new_format, file_name)
+    file = download_file_from_gcs(file_name)
+    logging.debug("file", file)
+    # if new_format.upper() == 'TAR.GZ':
+    #     convert_file_tar_gz(nueva_tarea_id, file)
+    # elif new_format.upper() == '7Z':
+    #     convert_file_7z(nueva_tarea_id, file)
+    # elif new_format.upper() == 'TAR.BZ2':
+    #     convert_file_tar_bz2(nueva_tarea_id, file)
 
 
-def enviar_accion(id, new_format):
-    process_to_convert(new_format, id)
+def enviar_accion(file_name, format_to_convert, file_id):
+    process_to_convert(format_to_convert, file_name)
     actualizacion_tarea = Tarea.query.filter(Tarea.id == id).first()
-    actualizacion_tarea.status = "processed"
-    db.session.add(actualizacion_tarea)
-    db.session.commit()
+    # actualizacion_tarea.status = "processed"
+    # db.session.add(actualizacion_tarea)
+    # db.session.commit()
 
 
 def callback(message):
@@ -138,9 +178,11 @@ def callback(message):
         print(message.data)
         # Realiza cualquier procesamiento adicional que desees hacer con el mensaje aquí
         data = str(message.data.decode()).split(",")
-        print(data[0])
-        print(data[1])
-        enviar_accion(data[0], data[1])
+        file_name = data[0]
+        format_to_convert = data[1]
+        file_id = data[2]
+        logging.debug(file_name, format_to_convert, file_id)
+        enviar_accion(file_name, format_to_convert, file_id)
         message.ack()  # Confirma la recepción del mensaje
 
 

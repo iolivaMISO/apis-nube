@@ -164,7 +164,7 @@ class VistaTasks(Resource):
                     # Eliminar el archivo de la carpeta temporal
                     os.remove(file_path)
                     # Enviar mensaje a pub/sub
-                    message = id_file + "," + new_format
+                    message = id_file + "," + new_format + "," + nueva_tarea.id
                     self.publish_message(message)
                 db.session.commit()
         return {"mensaje": "procesado con éxito"}
