@@ -5,6 +5,7 @@ import tempfile
 import uuid
 
 from google.cloud import storage
+from google.cloud import pubsub_v1
 
 from flask import send_file, make_response
 from flask_restful import Resource
@@ -153,8 +154,28 @@ class VistaTasks(Resource):
                 id_file = 'archivo' + str(uuid.uuid4())
                 url = upload_file_to_gcs(self, 'pruebaapisnube', file_path, id_file)
                 logging.debug('url del archivo: %s', url)
-
+                # Eliminar el archivo de la carpeta temporal
+                os.remove(file_path)
+                # Enviar mensaje a pub/sub
+                message = str(nueva_tarea.id) + "," + new_format
+                self.publish_message(message)
         return {"mensaje": "procesado con éxito"}
+
+    def publish_message(self, message):
+        # Crea un cliente de Pub/Sub
+        publisher = pubsub_v1.PublisherClient()
+
+        # Forma el nombre completo del tema
+        topic_path = publisher.topic_path(project_id, topic_id)
+
+        # Convierte el mensaje en bytes
+        data = message.encode('utf-8')
+
+        # Publica el mensaje en el tema
+        future = publisher.publish(topic_path, data)
+
+        # Espera a que se complete la publicación del mensaje
+        future.result()
 
 
 class VistaFiles(Resource):
