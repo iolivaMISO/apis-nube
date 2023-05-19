@@ -252,6 +252,8 @@ def upload_file_to_gcs(self, bucket_name, source_blob, destination_blob_name):
     # Crea un objeto Blob en el bucket
     blob = bucket.blob(destination_blob_name)
 
+    blob._properties["timeout"] = 600
+
     # Carga el archivo en el objeto Blob
     blob.upload_from_filename(source_blob)
 
