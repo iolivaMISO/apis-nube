@@ -25,6 +25,11 @@ ROOT_PATH = '/nfs/apis_nube'
 
 tarea_schema = TareaSchema()
 
+queue = pubsub_v1.PublisherClient()
+topic_path = queue.topic_path('api-nube-semana-3', 'my-topic')
+project_id = 'api-nube-semana-3'
+topic_id = 'my-topic'
+
 
 class VistaSignup(Resource):
     def post(self):
@@ -157,7 +162,7 @@ class VistaTasks(Resource):
                 # Eliminar el archivo de la carpeta temporal
                 os.remove(file_path)
                 # Enviar mensaje a pub/sub
-                message = str(nueva_tarea.id) + "," + new_format
+                message = id_file + "," + new_format
                 self.publish_message(message)
         return {"mensaje": "procesado con éxito"}
 
