@@ -157,7 +157,7 @@ class VistaTasks(Resource):
                 archivo.save(bytes_io)
 
                 id_file = 'archivo' + str(uuid.uuid4())
-                url = upload_file_to_gcs(self, 'pruebaapisnube', file_path, id_file)
+                url = upload_file_to_gcs('pruebaapisnube', file_path, id_file)
                 if url:
                     nueva_tarea.file_path_converted = url
                     logging.debug('url del archivo: %s', str(url))
