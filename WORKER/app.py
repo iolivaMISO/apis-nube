@@ -163,7 +163,7 @@ def process_to_convert(new_format, file_name):
 
 def enviar_accion(file_name, format_to_convert, file_id):
     process_to_convert(format_to_convert, file_name)
-    actualizacion_tarea = Tarea.query.filter(Tarea.id == id).first()
+    # actualizacion_tarea = Tarea.query.filter(Tarea.id == id).first()
     # actualizacion_tarea.status = "processed"
     # db.session.add(actualizacion_tarea)
     # db.session.commit()
