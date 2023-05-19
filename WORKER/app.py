@@ -153,7 +153,7 @@ def get_file_by_id_task(id_task):
 def process_to_convert(new_format, file_name):
     logging.debug("process_to_convert !!!!!!!!!!!!!!!!!!!!!!!!!!!!", new_format, file_name)
     file = download_file_from_gcs(file_name)
-    logging.debug("file", file)
+    logging.debug("file: %s", str(file))
     # if new_format.upper() == 'TAR.GZ':
     #     convert_file_tar_gz(nueva_tarea_id, file)
     # elif new_format.upper() == '7Z':
