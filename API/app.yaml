@@ -1,5 +1,5 @@
 runtime: python27
-entrypoint: gunicorn -b :5000 app:app
+entrypoint: flask run
 runtime_config:
     python_version: 3
 manual_scaling:
